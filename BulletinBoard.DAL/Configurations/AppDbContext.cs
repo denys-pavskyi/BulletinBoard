@@ -20,6 +20,8 @@ public class AppDbContext: DbContext
         base.OnModelCreating(modelBuilder);
 
 
+        modelBuilder.Entity<Category>().HasData(InitialData.Categories);
+        modelBuilder.Entity<Subcategory>().HasData(InitialData.Subcategories.ToArray());
 
     }
 }

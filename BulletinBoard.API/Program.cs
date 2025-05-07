@@ -1,5 +1,6 @@
 
 using BulletinBoard.DAL.Configurations;
+using Microsoft.EntityFrameworkCore;
 
 namespace BulletinBoardAPI
 {
