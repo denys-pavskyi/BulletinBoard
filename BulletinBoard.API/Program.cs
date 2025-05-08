@@ -6,6 +6,7 @@ using BulletinBoard.BLL.Services;
 using BulletinBoard.DAL.Configurations;
 using BulletinBoard.DAL.Repositories;
 using BulletinBoard.DAL.Repositories.Interfaces;
+using BulletinBoardAPI.Middlewares;
 using Microsoft.EntityFrameworkCore;
 
 namespace BulletinBoardAPI
@@ -58,6 +59,7 @@ namespace BulletinBoardAPI
 
             app.UseAuthorization();
 
+            app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
 
             app.MapControllers();
 
