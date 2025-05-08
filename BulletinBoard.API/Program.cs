@@ -1,5 +1,7 @@
 
+using AutoMapper;
 using BulletinBoard.BLL.Interfaces;
+using BulletinBoard.BLL.Other;
 using BulletinBoard.BLL.Services;
 using BulletinBoard.DAL.Configurations;
 using BulletinBoard.DAL.Repositories;
@@ -21,6 +23,12 @@ namespace BulletinBoardAPI
             builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(builder.Configuration["ConnectionStrings:MsSqlServer"]));
 
+
+            //mapper config
+            var mapperConfig = new MapperConfiguration(mc => { mc.AddProfile(new MapperProfile()); });
+
+            var mapper = mapperConfig.CreateMapper();
+            builder.Services.AddSingleton(mapper);
 
             // Repositories
 
