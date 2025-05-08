@@ -1,5 +1,7 @@
 
 using BulletinBoard.DAL.Configurations;
+using BulletinBoard.DAL.Repositories;
+using BulletinBoard.DAL.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace BulletinBoardAPI
@@ -16,6 +18,17 @@ namespace BulletinBoardAPI
 
             builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(builder.Configuration["ConnectionStrings:MsSqlServer"]));
+
+
+            // Repositories
+
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
+            builder.Services.AddScoped<IAnnouncementRepository, AnnouncementRepository>();
+
+            // Services
+
+
+
 
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
