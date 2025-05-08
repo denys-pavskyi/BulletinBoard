@@ -6,7 +6,7 @@ namespace BulletinBoard.DAL.Entities;
 public class Announcement
 {
     [Key]
-    public int Id { get; set; }
+    public Guid Id { get; set; }
 
     [Required]
     [MaxLength(150)]
@@ -25,7 +25,7 @@ public class Announcement
     [ForeignKey(nameof(SubcategoryId))]
     public Subcategory SubCategory { get; set; } = null!;
 
-    public int UserId { get; set; }
+    public Guid UserId { get; set; }
 
     [ForeignKey(nameof(UserId))]
     public User User { get; set; } = null!;

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BulletinBoard.DAL.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250507222608_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20250508121336_AddedCategoriesAndSubcategoriesInitialData")]
+    partial class AddedCategoriesAndSubcategoriesInitialData
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -27,11 +27,9 @@ namespace BulletinBoard.DAL.Migrations
 
             modelBuilder.Entity("BulletinBoard.DAL.Entities.Announcement", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
@@ -52,8 +50,8 @@ namespace BulletinBoard.DAL.Migrations
                         .HasMaxLength(150)
                         .HasColumnType("nvarchar(150)");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
@@ -80,6 +78,28 @@ namespace BulletinBoard.DAL.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Categories");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Home Appliances"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Computer Equipment"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Smartphones"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Name = "Others"
+                        });
                 });
 
             modelBuilder.Entity("BulletinBoard.DAL.Entities.Subcategory", b =>
@@ -103,15 +123,123 @@ namespace BulletinBoard.DAL.Migrations
                     b.HasIndex("CategoryId");
 
                     b.ToTable("Subcategories");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CategoryId = 1,
+                            Name = "Refrigerators"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CategoryId = 1,
+                            Name = "Washing Machines"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CategoryId = 1,
+                            Name = "Water Heaters"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CategoryId = 1,
+                            Name = "Ovens"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            CategoryId = 1,
+                            Name = "Hoods"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            CategoryId = 1,
+                            Name = "Microwave Ovens"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            CategoryId = 2,
+                            Name = "PCs"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            CategoryId = 2,
+                            Name = "Laptops"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            CategoryId = 2,
+                            Name = "Monitors"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            CategoryId = 2,
+                            Name = "Printers"
+                        },
+                        new
+                        {
+                            Id = 11,
+                            CategoryId = 2,
+                            Name = "Scanners"
+                        },
+                        new
+                        {
+                            Id = 12,
+                            CategoryId = 3,
+                            Name = "Android Smartphones"
+                        },
+                        new
+                        {
+                            Id = 13,
+                            CategoryId = 3,
+                            Name = "iOS/Apple Smartphones"
+                        },
+                        new
+                        {
+                            Id = 14,
+                            CategoryId = 4,
+                            Name = "Clothing"
+                        },
+                        new
+                        {
+                            Id = 15,
+                            CategoryId = 4,
+                            Name = "Footwear"
+                        },
+                        new
+                        {
+                            Id = 16,
+                            CategoryId = 4,
+                            Name = "Accessories"
+                        },
+                        new
+                        {
+                            Id = 17,
+                            CategoryId = 4,
+                            Name = "Sports Equipment"
+                        },
+                        new
+                        {
+                            Id = 18,
+                            CategoryId = 4,
+                            Name = "Toys"
+                        });
                 });
 
             modelBuilder.Entity("BulletinBoard.DAL.Entities.User", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Email")
                         .IsRequired()

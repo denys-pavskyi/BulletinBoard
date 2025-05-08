@@ -5,7 +5,7 @@ namespace BulletinBoard.DAL.Entities;
 public class User
 {
     [Key]
-    public int Id { get; set; }
+    public Guid Id { get; set; }
 
     [Required]
     [MaxLength(30)]
