@@ -1,4 +1,6 @@
 
+using BulletinBoard.BLL.Interfaces;
+using BulletinBoard.BLL.Services;
 using BulletinBoard.DAL.Configurations;
 using BulletinBoard.DAL.Repositories;
 using BulletinBoard.DAL.Repositories.Interfaces;
@@ -27,8 +29,8 @@ namespace BulletinBoardAPI
 
             // Services
 
-
-
+            builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddScoped<IAnnouncementService, AnnouncementService>();
 
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
