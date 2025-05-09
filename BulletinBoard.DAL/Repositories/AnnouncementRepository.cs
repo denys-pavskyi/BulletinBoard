@@ -50,10 +50,11 @@ public class AnnouncementRepository: IAnnouncementRepository
 
     public async Task<Announcement?> GetByIdAsync(Guid id)
     {
-        var announcement = _context.Announcements
+        var announcements = await _context.Announcements
             .FromSql($"EXEC GetAnnouncementById @Id={id}")
-            .AsEnumerable()
-            .FirstOrDefault();
+            .ToListAsync();
+            
+        var announcement = announcements.FirstOrDefault();
 
         if (announcement == null)
             return null;

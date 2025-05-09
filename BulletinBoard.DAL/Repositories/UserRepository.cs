@@ -26,5 +26,27 @@ public class UserRepository: IUserRepository
         return users.FirstOrDefault();
     }
 
+    public async Task RegisterUserAsync(User user)
+    {
+        await _context.Database.ExecuteSqlAsync($@"
+        EXEC RegisterUser 
+            @Id = {user.Id}, 
+            @Username = {user.Username}, 
+            @Email = {user.Email}, 
+            @Password = {user.Password}");
+    }
+
+    public async Task<User?> AuthorizeUserAsync(string username, string password)
+    {
+        var users = await _context.Users
+            .FromSql($@"
+            EXEC AuthorizeUser 
+                @Username = {username}, 
+                @Password = {password}")
+            .ToListAsync();
+
+        return users.FirstOrDefault();
+    }
+
 
 }
