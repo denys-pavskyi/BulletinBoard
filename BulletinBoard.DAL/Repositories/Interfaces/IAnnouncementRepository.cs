@@ -6,7 +6,7 @@ public interface IAnnouncementRepository
 {
     Task<List<Announcement>> GetAllAsync();
     Task AddAsync(Announcement announcement);
-    Task DeleteByIdAsync(int id);
+    Task DeleteByIdAsync(Guid id);
     Task<Announcement?> GetByIdAsync(Guid id);
     Task UpdateAsync(Announcement announcement);
 }

@@ -47,4 +47,44 @@ public class AnnouncementService: IAnnouncementService
         return Result<AnnouncementDto>.Success(dto);
     }
 
+    public async Task<Result> UpdateAsync(Guid id, UpdateAnnouncementRequest request)
+    {
+        var existing = await _announcementRepository.GetByIdAsync(id);
+        if (existing is null)
+        {
+            return Result.Failure(new ErrorResponse
+            {
+                Message = "Announcement not found",
+                HttpCode = HttpStatusCode.NotFound
+            });
+        }
+        
+        existing.Title = request.Title;
+        existing.Description = request.Description;
+        existing.IsActive = request.IsActive;
+        existing.SubcategoryId = request.SubcategoryId;
+
+        await _announcementRepository.UpdateAsync(existing);
+
+        return Result.Success();
+    }
+
+    public async Task<Result> DeleteByIdAsync(Guid id)
+    {
+        var announcement = await _announcementRepository.GetByIdAsync(id);
+
+        if (announcement is null)
+        {
+            return Result.Failure(new ErrorResponse
+            {
+                Message = $"Announcement with ID = {id} not found",
+                HttpCode = HttpStatusCode.NotFound
+            });
+        }
+            
+
+        await _announcementRepository.DeleteByIdAsync(id);
+
+        return Result.Success();
+    }
 }

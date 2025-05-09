@@ -15,6 +15,7 @@ public class AnnouncementRepository: IAnnouncementRepository
         _context = context;
     }
 
+
     public async Task<List<Announcement>> GetAllAsync()
     {
         return await _context.Announcements
@@ -38,7 +39,7 @@ public class AnnouncementRepository: IAnnouncementRepository
     }
 
 
-    public async Task DeleteByIdAsync(int id)
+    public async Task DeleteByIdAsync(Guid id)
     {
         var sql = "EXEC DeleteAnnouncementById @Id";
 
