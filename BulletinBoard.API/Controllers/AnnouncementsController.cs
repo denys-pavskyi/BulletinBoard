@@ -29,6 +29,8 @@ namespace BulletinBoard.API.Controllers
 
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> AddAsync([FromBody] CreateNewAnnouncementRequest model)
         {
             var result = await _announcementService.AddAsync(model);
@@ -54,6 +56,7 @@ namespace BulletinBoard.API.Controllers
         [HttpPut("{id:guid}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> UpdateAsync(Guid id, [FromBody] UpdateAnnouncementRequest request)
         {
             var result = await _announcementService.UpdateAsync(id, request);
@@ -75,6 +78,31 @@ namespace BulletinBoard.API.Controllers
                 error => error.ToActionResult()
             );
         }
+
+        [HttpGet("user/{userId}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetByUserId(Guid userId)
+        {
+            var result = await _announcementService.GetAllByUserIdAsync(userId);
+
+            return result.Match(
+                Ok,
+                error => error.ToActionResult());
+        }
+
+        [HttpGet("filter")]
+        public async Task<IActionResult> GetFiltered([FromBody] AnnouncementFilterRequest filter)
+        {
+            var result = await _announcementService.GetFilteredAsync(filter.SubcategoryIds, filter.IsActive);
+
+            return result.Match<IActionResult>(
+                Ok,
+                error => error.ToActionResult());
+        }
+
+
 
     }
 }

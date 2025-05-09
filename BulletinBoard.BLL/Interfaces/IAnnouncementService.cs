@@ -12,4 +12,6 @@ public interface IAnnouncementService
     Task<Result<AnnouncementDto>> GetByIdAsync(Guid id);
     Task<Result> UpdateAsync(Guid id, UpdateAnnouncementRequest request);
     Task<Result> DeleteByIdAsync(Guid id);
+    Task<Result<List<AnnouncementDto>>> GetAllByUserIdAsync(Guid userId);
+    Task<Result<List<AnnouncementDto>>> GetFilteredAsync(List<int> subcategoryIds, bool isActive);
 }

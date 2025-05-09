@@ -78,4 +78,28 @@ public class AnnouncementRepository: IAnnouncementRepository
             @SubcategoryId={announcement.SubcategoryId}");
     }
 
+    public async Task<List<Announcement>> GetAllAnnouncementsByUserIdAsync(Guid userId)
+    {
+        var userIdParameter = new SqlParameter("@UserId", userId);
+
+        var announcements = await _context.Announcements
+            .FromSqlRaw("EXEC GetAllAnnouncementsByUserId @UserId", userIdParameter)
+            .ToListAsync();
+
+
+        return announcements;
+    }
+
+    public async Task<List<Announcement>> GetAllAnnouncementsByFilterAsync(string subcategoryIds, bool isActive)
+    {
+        var subcategoryIdsParameter = new SqlParameter("@SubcategoryIds", subcategoryIds);
+        var isActiveParameter = new SqlParameter("@IsActive", isActive);
+
+        var announcements = await _context.Announcements
+            .FromSqlRaw("EXEC GetAllAnnouncementsByFilter @SubcategoryIds, @IsActive", subcategoryIdsParameter, isActiveParameter)
+            .ToListAsync();
+
+        return announcements;
+    }
+
 }
