@@ -7,9 +7,13 @@ using BulletinBoard.DAL.Configurations;
 using BulletinBoard.DAL.Repositories;
 using BulletinBoard.DAL.Repositories.Interfaces;
 using BulletinBoardAPI.Middlewares;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using System;
+using BulletinBoard.BLL.Models.Requests;
+using BulletinBoard.BLL.Validations.Announcements;
 
-namespace BulletinBoardAPI
+namespace BulletinBoard.API
 {
     public class Program
     {
@@ -41,6 +45,10 @@ namespace BulletinBoardAPI
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<IAnnouncementService, AnnouncementService>();
 
+
+            // Validators
+
+            builder.Services.AddTransient<IAnnouncementCollectionValidators, AnnouncementCollectionValidators>();
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();

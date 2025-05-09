@@ -10,6 +10,9 @@ public class ErrorResponse
 
     [JsonIgnore]
     public HttpStatusCode? HttpCode { get; set; } = HttpStatusCode.BadRequest;
+
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public List<string>? Errors { get; set; }
 }
 
 public static class ErrorResponseExtensions

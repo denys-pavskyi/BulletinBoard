@@ -9,7 +9,7 @@ public class Announcement
     public Guid Id { get; set; }
 
     [Required]
-    [MaxLength(150)]
+    [MinLength(3) ,MaxLength(150)]
     public string Title { get; set; } = string.Empty;
 
     [Required]
