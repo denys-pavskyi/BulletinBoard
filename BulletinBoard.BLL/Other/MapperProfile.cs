@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using BulletinBoard.BLL.Models.DtoModels;
+using BulletinBoard.BLL.Models.Requests;
 using BulletinBoard.DAL.Entities;
 
 namespace BulletinBoard.BLL.Other;
@@ -14,7 +15,13 @@ public class MapperProfile: Profile
             .ReverseMap();
 
         CreateMap<Announcement, AnnouncementDto>()
+            .ForMember(dto => dto.CategoryId, obj => obj.MapFrom(src => src.SubCategory.Category.Id))
+            .ForMember(dto => dto.SubcategoryName, obj => obj.MapFrom(src => src.SubCategory.Name))
+            .ForMember(dto => dto.CategoryName, obj => obj.MapFrom(src => src.SubCategory.Category.Name))
             .ReverseMap();
+
+        CreateMap<CreateNewAnnouncementRequest, Announcement>()
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => Guid.NewGuid()));
 
         CreateMap<Category, CategoryDto>()
             .ReverseMap();
