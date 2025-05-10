@@ -59,24 +59,22 @@ namespace BulletinBoard.WebClient.Controllers
         }
 
 
-        //[HttpPost]
-        //public async Task<IActionResult> Index(PostIndexViewModel model)
-        //{
-        //    var filteredPosts = model.SelectedSubcategoryIds.Any()
-        //        ? await _postService.GetFilteredAsync(model.SelectedSubcategoryIds, model.IsActive)
-        //        : new List<PostViewModel>();
-
-
-        //    model.Categories = CategoryData.Categories;
-        //    model.Posts = filteredPosts;
-
-        //    return View(model);
-        //}
-
-        public IActionResult MyPosts()
+        public async Task<IActionResult> MyPosts()
         {
-            // TODO: get user posts
-            return View();
+            var userId = Guid.Parse("D2B23AD3-BD8B-4CA6-AA22-B8E5B3C47CF0");
+            var posts = await _postService.GetPostsByUserIdAsync(userId);
+
+            if (!posts.Any())
+            {
+                return NoContent();
+            }
+
+            var viewModel = new MyPostsViewModel
+            {
+                Posts = posts
+            };
+
+            return View(viewModel);
         }
 
     }

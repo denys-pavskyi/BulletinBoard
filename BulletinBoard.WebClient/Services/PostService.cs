@@ -30,4 +30,12 @@ public class PostService: IPostService
         var result = await response.Content.ReadFromJsonAsync<List<PostViewModel>>();
         return result ?? new List<PostViewModel>();
     }
+
+
+    public async Task<List<PostViewModel>> GetPostsByUserIdAsync(Guid userId)
+    {
+        var response = await _httpClient.GetFromJsonAsync<List<PostViewModel>>($"/api/posts/user/{userId}");
+        return response ?? new List<PostViewModel>();
+    }
+
 }
