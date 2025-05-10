@@ -44,6 +44,15 @@
     <div class="col-md-9">
         @foreach (var item in Model)
         {
+            var subcategory = categories.SelectMany(c => c.Subcategories).FirstOrDefault(sc => sc.Id == item.SubcategoryId);
+            var category = categories.FirstOrDefault(c => c.Subcategories.Any(sc => sc.Id == item.SubcategoryId));
+
+            if (subcategory != null && category != null)
+            {
+                item.SubcategoryName = subcategory.Name;
+                item.CategoryName = category.Name;
+            }
+
             <div class="card mb-3">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
@@ -52,9 +61,16 @@
                             @(item.IsActive ? "Active" : "Inactive")
                         </span>
                     </div>
-                    <p class="card-text">@item.Description.Substring(0, Math.Min(item.Description.Length, 150))...</p>
-                    <p class="text-muted mb-1"><strong>Category:</strong> @item.CategoryName / @item.SubcategoryName</p>
-                    <small class="text-muted">@item.CreatedDate.ToShortDateString()</small>
+                    <p class="card-text">
+                        @(item.Description.Length > 150 ? item.Description.Substring(0, 150) + "..." : item.Description)
+                    </p>
+                    <div class="d-flex justify-content-between align-items-center mb-1 text-muted">
+                        <small>@item.CreatedDate.ToShortDateString()</small>
+                        <span class="badge bg-secondary">
+                            <i class="bi bi-tags-fill me-1"></i>
+                            @item.CategoryName / @item.SubcategoryName
+                        </span>
+                    </div>
                 </div>
             </div>
         }
