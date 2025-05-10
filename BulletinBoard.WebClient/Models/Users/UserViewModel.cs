@@ -1,4 +1,4 @@
-﻿namespace BulletinBoard.WebClient.Models;
+﻿namespace BulletinBoard.WebClient.Models.Users;
 
 public class UserViewModel
 {

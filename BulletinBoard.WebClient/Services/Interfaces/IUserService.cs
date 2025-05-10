@@ -1,4 +1,4 @@
-﻿using BulletinBoard.WebClient.Models;
+﻿using BulletinBoard.WebClient.Models.Users;
 
 namespace BulletinBoard.WebClient.Services.Interfaces;
 

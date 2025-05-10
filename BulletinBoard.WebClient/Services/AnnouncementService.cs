@@ -1,4 +1,4 @@
-﻿using BulletinBoard.WebClient.Models;
+﻿using BulletinBoard.WebClient.Models.Announcements;
 using BulletinBoard.WebClient.Services.Interfaces;
 
 namespace BulletinBoard.WebClient.Services;
