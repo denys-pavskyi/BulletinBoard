@@ -6,7 +6,7 @@ namespace BulletinBoard.DAL.Configurations;
 public class AppDbContext: DbContext
 {
     public DbSet<User> Users { get; set; }
-    public DbSet<Announcement> Announcements { get; set; }
+    public DbSet<Post> Posts { get; set; }
     public DbSet<Category> Categories { get; set; }
     public DbSet<Subcategory> Subcategories { get; set; }
 

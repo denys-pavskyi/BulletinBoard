@@ -59,7 +59,7 @@ namespace BulletinBoard.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Announcements",
+                name: "Posts",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -72,15 +72,15 @@ namespace BulletinBoard.DAL.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Announcements", x => x.Id);
+                    table.PrimaryKey("PK_Posts", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Announcements_Subcategories_SubcategoryId",
+                        name: "FK_Posts_Subcategories_SubcategoryId",
                         column: x => x.SubcategoryId,
                         principalTable: "Subcategories",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Announcements_Users_UserId",
+                        name: "FK_Posts_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
@@ -88,13 +88,13 @@ namespace BulletinBoard.DAL.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Announcements_SubcategoryId",
-                table: "Announcements",
+                name: "IX_Posts_SubcategoryId",
+                table: "Posts",
                 column: "SubcategoryId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Announcements_UserId",
-                table: "Announcements",
+                name: "IX_Posts_UserId",
+                table: "Posts",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
@@ -107,7 +107,7 @@ namespace BulletinBoard.DAL.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Announcements");
+                name: "Posts");
 
             migrationBuilder.DropTable(
                 name: "Subcategories");

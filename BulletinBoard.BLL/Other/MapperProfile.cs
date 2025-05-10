@@ -14,13 +14,13 @@ public class MapperProfile: Profile
         CreateMap<User, UserDto>()
             .ReverseMap();
 
-        CreateMap<Announcement, AnnouncementDto>()
+        CreateMap<Post, PostDto>()
             .ForMember(dto => dto.CategoryId, obj => obj.MapFrom(src => src.SubCategory.Category.Id))
             .ForMember(dto => dto.SubcategoryName, obj => obj.MapFrom(src => src.SubCategory.Name))
             .ForMember(dto => dto.CategoryName, obj => obj.MapFrom(src => src.SubCategory.Category.Name))
             .ReverseMap();
 
-        CreateMap<CreateNewAnnouncementRequest, Announcement>()
+        CreateMap<CreateNewPostRequest, Post>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => Guid.NewGuid()));
 
         CreateMap<Category, CategoryDto>()

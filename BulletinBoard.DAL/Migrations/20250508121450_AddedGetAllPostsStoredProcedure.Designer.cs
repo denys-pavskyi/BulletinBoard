@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BulletinBoard.DAL.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250509180621_AddGetUserByIdProcedure")]
-    partial class AddGetUserByIdProcedure
+    [Migration("20250508121450_AddedGetAllPostsStoredProcedure")]
+    partial class AddedGetAllPostsStoredProcedure
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

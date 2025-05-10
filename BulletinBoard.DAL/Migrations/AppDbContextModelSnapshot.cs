@@ -22,7 +22,7 @@ namespace BulletinBoard.DAL.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("BulletinBoard.DAL.Entities.Announcement", b =>
+            modelBuilder.Entity("BulletinBoard.DAL.Entities.Post", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -56,7 +56,7 @@ namespace BulletinBoard.DAL.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Announcements");
+                    b.ToTable("Posts");
                 });
 
             modelBuilder.Entity("BulletinBoard.DAL.Entities.Category", b =>
@@ -258,7 +258,7 @@ namespace BulletinBoard.DAL.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("BulletinBoard.DAL.Entities.Announcement", b =>
+            modelBuilder.Entity("BulletinBoard.DAL.Entities.Post", b =>
                 {
                     b.HasOne("BulletinBoard.DAL.Entities.Subcategory", "SubCategory")
                         .WithMany()
@@ -267,7 +267,7 @@ namespace BulletinBoard.DAL.Migrations
                         .IsRequired();
 
                     b.HasOne("BulletinBoard.DAL.Entities.User", "User")
-                        .WithMany("Announcements")
+                        .WithMany("Posts")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -295,7 +295,7 @@ namespace BulletinBoard.DAL.Migrations
 
             modelBuilder.Entity("BulletinBoard.DAL.Entities.User", b =>
                 {
-                    b.Navigation("Announcements");
+                    b.Navigation("Posts");
                 });
 #pragma warning restore 612, 618
         }

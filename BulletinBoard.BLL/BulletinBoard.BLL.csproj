@@ -17,10 +17,4 @@
     <ProjectReference Include="..\BulletinBoard.DAL\BulletinBoard.DAL.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Interfaces\" />
-    <Folder Include="Models\DtoModels\" />
-    <Folder Include="Services\" />
-  </ItemGroup>
-
 </Project>

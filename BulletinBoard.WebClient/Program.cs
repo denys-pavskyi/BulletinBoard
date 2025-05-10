@@ -26,7 +26,7 @@ namespace BulletinBoard.WebClient
 
             // Services
             builder.Services.AddScoped<IUserService, UserService>();
-            builder.Services.AddScoped<IAnnouncementService, AnnouncementService>();
+            builder.Services.AddScoped<IPostService, PostService>();
 
 
             var app = builder.Build();
@@ -48,7 +48,7 @@ namespace BulletinBoard.WebClient
 
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Announcements}/{action=Index}/{id?}");
+                pattern: "{controller=Posts}/{action=Index}/{id?}");
 
             app.Run();
         }

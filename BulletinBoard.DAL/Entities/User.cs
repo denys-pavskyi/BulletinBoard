@@ -19,6 +19,6 @@ public class User
     [MaxLength(40)]
     public string Password { get; set; } = string.Empty;
 
-    //Relationship with Announcements many(Announcement) - to - one(User)
-    public ICollection<Announcement> Announcements { get; set; } = new List<Announcement>();
+    //Relationship with Posts many(Post) - to - one(User)
+    public ICollection<Post> Posts { get; set; } = new List<Post>();
 }

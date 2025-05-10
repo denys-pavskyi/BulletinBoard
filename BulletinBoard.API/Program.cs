@@ -6,12 +6,12 @@ using BulletinBoard.BLL.Services;
 using BulletinBoard.DAL.Configurations;
 using BulletinBoard.DAL.Repositories;
 using BulletinBoard.DAL.Repositories.Interfaces;
-using BulletinBoardAPI.Middlewares;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using System;
 using BulletinBoard.BLL.Models.Requests;
-using BulletinBoard.BLL.Validations.Announcements;
+using BulletinBoard.BLL.Validations.Posts;
+using BulletinBoard.API.Middlewares;
 
 namespace BulletinBoard.API
 {
@@ -38,17 +38,17 @@ namespace BulletinBoard.API
             // Repositories
 
             builder.Services.AddScoped<IUserRepository, UserRepository>();
-            builder.Services.AddScoped<IAnnouncementRepository, AnnouncementRepository>();
+            builder.Services.AddScoped<IPostRepository, PostRepository>();
 
             // Services
 
             builder.Services.AddScoped<IUserService, UserService>();
-            builder.Services.AddScoped<IAnnouncementService, AnnouncementService>();
+            builder.Services.AddScoped<IPostService, PostService>();
 
 
             // Validators
 
-            builder.Services.AddTransient<IAnnouncementCollectionValidators, AnnouncementCollectionValidators>();
+            builder.Services.AddTransient<IPostCollectionValidators, PostCollectionValidators>();
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();

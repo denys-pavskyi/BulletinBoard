@@ -6,7 +6,7 @@ namespace BulletinBoard.WebClient.Controllers
     {
         public IActionResult Logout()
         {
-            return RedirectToAction("Index", "Announcements");
+            return RedirectToAction("Index", "Posts");
         }
     }
 }

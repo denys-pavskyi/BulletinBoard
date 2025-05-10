@@ -1,13 +1,13 @@
 ﻿using System.Net;
 
-namespace BulletinBoardAPI.Middlewares;
+namespace BulletinBoard.API.Middlewares;
 
 public class GlobalExceptionHandlingMiddleware
 {
     private readonly RequestDelegate _next;
     private readonly ILogger<GlobalExceptionHandlingMiddleware> _logger;
 
-    public GlobalExceptionHandlingMiddleware(RequestDelegate next, 
+    public GlobalExceptionHandlingMiddleware(RequestDelegate next,
         ILogger<GlobalExceptionHandlingMiddleware> logger)
     {
         _next = next;
@@ -36,6 +36,6 @@ public class GlobalExceptionHandlingMiddleware
             await context.Response.WriteAsJsonAsync(response);
         }
 
-        
+
     }
 }
