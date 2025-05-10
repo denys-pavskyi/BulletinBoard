@@ -1,3 +1,8 @@
+using BulletinBoard.WebClient.Configurations;
+using BulletinBoard.WebClient.Services.Interfaces;
+using BulletinBoard.WebClient.Services;
+using Microsoft.Extensions.Options;
+
 namespace BulletinBoard.WebClient
 {
     public class Program
@@ -8,6 +13,17 @@ namespace BulletinBoard.WebClient
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+
+
+            builder.Services.Configure<ApiSettings>(
+                builder.Configuration.GetSection("ApiSettings"));
+
+            builder.Services.AddHttpClient("ApiClient", (sp, client) =>
+            {
+                var apiSettings = sp.GetRequiredService<IOptions<ApiSettings>>().Value;
+                client.BaseAddress = new Uri(apiSettings.BaseUrl);
+            });
+
 
             var app = builder.Build();
 

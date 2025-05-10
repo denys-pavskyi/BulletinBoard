@@ -790,3 +790,5 @@ FodyWeavers.xsd
 *.user
 _ReSharper.*
 packages
+/BulletinBoard.API/appsettings.json
+/BulletinBoard.API/appsettings.Development.json
