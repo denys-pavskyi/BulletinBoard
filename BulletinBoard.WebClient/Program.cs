@@ -24,6 +24,10 @@ namespace BulletinBoard.WebClient
                 client.BaseAddress = new Uri(apiSettings.BaseUrl);
             });
 
+            // Services
+            builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddScoped<IAnnouncementService, AnnouncementService>();
+
 
             var app = builder.Build();
 

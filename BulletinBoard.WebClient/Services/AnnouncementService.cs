@@ -7,9 +7,9 @@ public class AnnouncementService: IAnnouncementService
 {
     private readonly HttpClient _httpClient;
 
-    public AnnouncementService(HttpClient httpClient)
+    public AnnouncementService(IHttpClientFactory httpClientFactory)
     {
-        _httpClient = httpClient;
+        _httpClient = httpClientFactory.CreateClient("ApiClient");
     }
 
     public async Task<List<AnnouncementViewModel>> GetAllAsync()
