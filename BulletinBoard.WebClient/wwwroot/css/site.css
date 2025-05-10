@@ -29,3 +29,11 @@ body {
 .custom-navbar .nav-link:hover {
     text-decoration: underline;
 }
+
+form#filterForm label {
+    margin-left: 4px;
+}
+
+.card-text {
+    white-space: pre-line;
+}
