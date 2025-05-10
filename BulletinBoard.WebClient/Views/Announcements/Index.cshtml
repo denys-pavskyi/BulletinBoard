@@ -1,10 +1,9 @@
 ﻿@model BulletinBoard.WebClient.Models.Announcements.AnnouncementIndexViewModel
 @using BulletinBoard.WebClient.Data
-@using Microsoft.AspNetCore.Mvc.TagHelpers
 
 @{
     ViewData["Title"] = "Announcements";
-    var categories =  CategoryData.Categories;
+    var categories = CategoryData.Categories;
 }
 
 @section Scripts {
@@ -17,91 +16,72 @@
             });
         });
 
-        document.addEventListener('DOMContentLoaded', function () {
-            var categoryCheckboxes = document.querySelectorAll('.form-check input[type="checkbox"]');
+        document.getElementById('filterForm').addEventListener('submit', function (e) {
+            e.preventDefault();
 
-            categoryCheckboxes.forEach(function (checkbox) {
-                checkbox.addEventListener('change', function () {
-                    var categoryId = checkbox.value;
-                    var subcategoryCheckboxes = document.querySelectorAll('input[type="checkbox"][data-category-id="' + categoryId + '"]');
+            const selectedSubcategoryIds = Array.from(document.querySelectorAll('input[name="SelectedSubcategoryIds"]:checked'))
+                .map(cb => parseInt(cb.value));
 
-                    subcategoryCheckboxes.forEach(function (subcategoryCheckbox) {
-                        subcategoryCheckbox.checked = checkbox.checked;
-                    });
+            const isActive = document.getElementById('activeCheckbox').checked;
+
+            fetch('/Announcements/FilterPartial', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                },
+                body: JSON.stringify({
+                    subcategoryIds: selectedSubcategoryIds,
+                    isActive: isActive
+                })
+            })
+                .then(res => res.text())
+                .then(html => {
+                    document.getElementById('announcement-list').innerHTML = html;
                 });
-            });
         });
     </script>
 }
 
+<!-- Filters form -->
 <div class="row">
-    
-    <!-- Sidebar filters -->
     <div class="col-md-3">
         <form id="filterForm" method="post">
-            <h5>Filter by Category</h5>
+            @Html.AntiForgeryToken()
 
+            <h5>Filter by Category</h5>
             @foreach (var category in Model.Categories)
             {
                 <div class="form-check">
-                    <input type="checkbox" class="form-check-input" id="category-@category.Id" name="SelectedSubcategoryIds" value="@category.Id" @(Model.SelectedSubcategoryIds.Contains(category.Id) ? "checked" : "") />
+                    <input type="checkbox" class="form-check-input category-checkbox" data-category-id="@category.Id" id="category-@category.Id" @(category.Subcategories.All(sc => Model.SelectedSubcategoryIds.Contains(sc.Id)) ? "checked" : "") />
                     <label class="form-check-label" for="category-@category.Id">@category.Name</label>
                     <div class="ms-3">
                         @foreach (var subcategory in category.Subcategories)
                         {
                             <div class="form-check">
-                                <input type="checkbox" class="form-check-input" id="subcategory-@subcategory.Id" name="SelectedSubcategoryIds" value="@subcategory.Id" 
-                                       data-category-id="@category.Id"
-                                       @(Model.SelectedSubcategoryIds.Contains(subcategory.Id) ? "checked" : "") />
+                                <input type="checkbox" class="form-check-input subcategory-checkbox" data-category-id="@category.Id" name="SelectedSubcategoryIds" value="@subcategory.Id"
+                                       id="subcategory-@subcategory.Id"
+                                @(Model.SelectedSubcategoryIds.Contains(subcategory.Id) ? "checked" : "") />
                                 <label class="form-check-label" for="subcategory-@subcategory.Id">@subcategory.Name</label>
                             </div>
                         }
                     </div>
                 </div>
             }
-            
+
             <div class="form-check mb-2">
-                <input class="form-check-input" type="checkbox" id="activeCheckbox" name="IsActive" checked />
+                <input class="form-check-input" type="checkbox" id="activeCheckbox" name="IsActive" @(Model.IsActive ? "checked" : "") />
                 <label class="form-check-label" for="activeCheckbox">Show active</label>
             </div>
-
+            
             <button type="submit" class="btn btn-primary mt-3 w-100">Apply Filters</button>
         </form>
     </div>
 
-    <!-- Announcements list -->
+    <!-- Container for dynamic list -->
     <div class="col-md-9">
-        @foreach (var item in Model.Announcements)
-        {
-            var subcategory = categories.SelectMany(c => c.Subcategories).FirstOrDefault(sc => sc.Id == item.SubcategoryId);
-            var category = categories.FirstOrDefault(c => c.Subcategories.Any(sc => sc.Id == item.SubcategoryId));
-
-            if (subcategory != null && category != null)
-            {
-                item.SubcategoryName = subcategory.Name;
-                item.CategoryName = category.Name;
-            }
-
-            <div class="card mb-3">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h5 class="card-title mb-0">@item.Title</h5>
-                        <span class="badge @(item.IsActive ? "bg-success" : "bg-danger")">
-                            @(item.IsActive ? "Active" : "Inactive")
-                        </span>
-                    </div>
-                    <p class="card-text">
-                        @(item.Description.Length > 150 ? item.Description.Substring(0, 150) + "..." : item.Description)
-                    </p>
-                    <div class="d-flex justify-content-between align-items-center mb-1 text-muted">
-                        <small>@item.CreatedDate.ToShortDateString()</small>
-                        <span class="badge bg-secondary">
-                            <i class="bi bi-tags-fill me-1"></i>
-                            @item.CategoryName / @item.SubcategoryName
-                        </span>
-                    </div>
-                </div>
-            </div>
-        }
+        <div id="announcement-list">
+            @await Html.PartialAsync("_AnnouncementList", Model.Announcements)
+        </div>
     </div>
 </div>
