@@ -13,6 +13,12 @@ namespace BulletinBoard.WebClient.Controllers
             _announcementService = announcementService;
         }
 
-        
+
+        public async Task<IActionResult> Index()
+        {
+            var announcements = await _announcementService.GetAllAsync();
+            return View(announcements);
+        }
+
     }
 }

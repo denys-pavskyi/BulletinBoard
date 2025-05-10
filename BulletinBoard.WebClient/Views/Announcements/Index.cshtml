@@ -1,0 +1,15 @@
+﻿@model List<AnnouncementViewModel>
+
+<h1>All Announcements</h1>
+
+@foreach (var item in Model)
+{
+    <div class="announcement">
+        <h2>@item.Title</h2>
+        <p>@item.Description</p>
+        <p><strong>Category:</strong> @item.CategoryName / @item.SubcategoryName</p>
+        <p><strong>Status:</strong> @(item.IsActive ? "Active" : "Inactive")</p>
+        <p><em>@item.CreatedDate.ToShortDateString()</em></p>
+        <hr />
+    </div>
+}
