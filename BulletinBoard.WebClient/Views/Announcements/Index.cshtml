@@ -1,15 +1,29 @@
-﻿@model List<AnnouncementViewModel>
+﻿@model List<BulletinBoard.WebClient.Models.Announcements.AnnouncementViewModel>
+@using BulletinBoard.WebClient.Data
 
-<h1>All Announcements</h1>
-
-@foreach (var item in Model)
-{
-    <div class="announcement">
-        <h2>@item.Title</h2>
-        <p>@item.Description</p>
-        <p><strong>Category:</strong> @item.CategoryName / @item.SubcategoryName</p>
-        <p><strong>Status:</strong> @(item.IsActive ? "Active" : "Inactive")</p>
-        <p><em>@item.CreatedDate.ToShortDateString()</em></p>
-        <hr />
-    </div>
+@{
+    ViewData["Title"] = "Announcements";
+    var categories =  CategoryData.Categories;
 }
+
+<div class="row">
+    <!-- Announcements list -->
+    <div class="col-md-9">
+        @foreach (var item in Model)
+        {
+            <div class="card mb-3">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <h5 class="card-title">@item.Title</h5>
+                        <span class="badge @(item.IsActive ? "bg-success" : "bg-danger")">
+                            @(item.IsActive ? "Active" : "Inactive")
+                        </span>
+                    </div>
+                    <p class="card-text">@item.Description.Substring(0, Math.Min(item.Description.Length, 150))...</p>
+                    <p class="text-muted mb-1"><strong>Category:</strong> @item.CategoryName / @item.SubcategoryName</p>
+                    <small class="text-muted">@item.CreatedDate.ToShortDateString()</small>
+                </div>
+            </div>
+        }
+    </div>
+</div>
