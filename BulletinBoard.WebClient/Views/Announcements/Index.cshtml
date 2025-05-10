@@ -1,9 +1,37 @@
-﻿@model List<BulletinBoard.WebClient.Models.Announcements.AnnouncementViewModel>
+﻿@model BulletinBoard.WebClient.Models.Announcements.AnnouncementIndexViewModel
 @using BulletinBoard.WebClient.Data
+@using Microsoft.AspNetCore.Mvc.TagHelpers
 
 @{
     ViewData["Title"] = "Announcements";
     var categories =  CategoryData.Categories;
+}
+
+@section Scripts {
+    <script>
+        document.querySelectorAll('.category-checkbox').forEach(categoryCheckbox => {
+            categoryCheckbox.addEventListener('change', function () {
+                const categoryId = this.getAttribute('data-category-id');
+                const subcategoryCheckboxes = document.querySelectorAll('.subcategory-checkbox[data-category-id="' + categoryId + '"]');
+                subcategoryCheckboxes.forEach(cb => cb.checked = this.checked);
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            var categoryCheckboxes = document.querySelectorAll('.form-check input[type="checkbox"]');
+
+            categoryCheckboxes.forEach(function (checkbox) {
+                checkbox.addEventListener('change', function () {
+                    var categoryId = checkbox.value;
+                    var subcategoryCheckboxes = document.querySelectorAll('input[type="checkbox"][data-category-id="' + categoryId + '"]');
+
+                    subcategoryCheckboxes.forEach(function (subcategoryCheckbox) {
+                        subcategoryCheckbox.checked = checkbox.checked;
+                    });
+                });
+            });
+        });
+    </script>
 }
 
 <div class="row">
@@ -12,37 +40,38 @@
     <div class="col-md-3">
         <form id="filterForm" method="post">
             <h5>Filter by Category</h5>
-            @foreach (var category in categories)
+
+            @foreach (var category in Model.Categories)
             {
-                <div class="mb-2">
-                    <div>
-                        <input type="checkbox" class="form-check-input category-checkbox" data-category="@category.Id" />
-                        <label class="form-check-label fw-bold">@category.Name</label>
-                    </div>
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="category-@category.Id" name="SelectedSubcategoryIds" value="@category.Id" @(Model.SelectedSubcategoryIds.Contains(category.Id) ? "checked" : "") />
+                    <label class="form-check-label" for="category-@category.Id">@category.Name</label>
                     <div class="ms-3">
-                        @foreach (var sub in category.Subcategories)
+                        @foreach (var subcategory in category.Subcategories)
                         {
-                            <div>
-                                <input type="checkbox" name="SubcategoryIds" value="@sub.Id" class="form-check-input subcategory-checkbox" data-parent="@category.Id" />
-                                <label class="form-check-label">@sub.Name</label>
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="subcategory-@subcategory.Id" name="SelectedSubcategoryIds" value="@subcategory.Id" 
+                                       data-category-id="@category.Id"
+                                       @(Model.SelectedSubcategoryIds.Contains(subcategory.Id) ? "checked" : "") />
+                                <label class="form-check-label" for="subcategory-@subcategory.Id">@subcategory.Name</label>
                             </div>
                         }
                     </div>
                 </div>
             }
-
-            <div class="form-check mt-3">
-                <input class="form-check-input" type="checkbox" name="IsActive" value="true" checked />
-                <label class="form-check-label">Active only</label>
+            
+            <div class="form-check mb-2">
+                <input class="form-check-input" type="checkbox" id="activeCheckbox" name="IsActive" checked />
+                <label class="form-check-label" for="activeCheckbox">Show active</label>
             </div>
 
-            <button type="submit" class="btn btn-primary mt-3">Apply Filter</button>
+            <button type="submit" class="btn btn-primary mt-3 w-100">Apply Filters</button>
         </form>
     </div>
 
     <!-- Announcements list -->
     <div class="col-md-9">
-        @foreach (var item in Model)
+        @foreach (var item in Model.Announcements)
         {
             var subcategory = categories.SelectMany(c => c.Subcategories).FirstOrDefault(sc => sc.Id == item.SubcategoryId);
             var category = categories.FirstOrDefault(c => c.Subcategories.Any(sc => sc.Id == item.SubcategoryId));

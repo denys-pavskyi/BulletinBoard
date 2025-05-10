@@ -12,9 +12,22 @@ public class AnnouncementService: IAnnouncementService
         _httpClient = httpClientFactory.CreateClient("ApiClient");
     }
 
-    public async Task<List<AnnouncementViewModel>> GetAllAsync()
+    public async Task<List<AnnouncementViewModel>> GetFilteredAsync(List<int> subcategoryIds, bool isActive)
     {
-        var result = await _httpClient.GetFromJsonAsync<List<AnnouncementViewModel>>("/api/announcements");
+        var request = new
+        {
+            SubcategoryIds = subcategoryIds,
+            IsActive = isActive
+        };
+
+        var response = await _httpClient.PostAsJsonAsync("/api/announcements/filter", request);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            return new List<AnnouncementViewModel>();
+        }
+
+        var result = await response.Content.ReadFromJsonAsync<List<AnnouncementViewModel>>();
         return result ?? new List<AnnouncementViewModel>();
     }
 }

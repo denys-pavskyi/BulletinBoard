@@ -92,7 +92,7 @@ namespace BulletinBoard.API.Controllers
                 error => error.ToActionResult());
         }
 
-        [HttpGet("filter")]
+        [HttpPost("filter")]
         public async Task<IActionResult> GetFiltered([FromBody] AnnouncementFilterRequest filter)
         {
             var result = await _announcementService.GetFilteredAsync(filter.SubcategoryIds, filter.IsActive);
