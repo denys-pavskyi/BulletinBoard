@@ -20,5 +20,11 @@ namespace BulletinBoard.WebClient.Controllers
             return View(announcements);
         }
 
+        public IActionResult MyAnnouncements()
+        {
+            // TODO: get user announcements
+            return View();
+        }
+
     }
 }
