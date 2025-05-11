@@ -8,6 +8,6 @@ namespace BulletinBoard.BLL.Interfaces;
 public interface IUserService
 {
     Task<Result<UserDto>> GetByIdAsync(Guid id);
-    Task<Result> RegisterUserAsync(RegisterUserRequest request);
-    Task<Result<UserDto>> AuthorizeUserAsync(AuthorizeUserRequest request);
+    Task<Result<UserDto>> RegisterAsync(RegisterUserRequest request);
+    Task<Result<AuthDto>> AuthenticateAsync(LoginRequestDto request);
 }

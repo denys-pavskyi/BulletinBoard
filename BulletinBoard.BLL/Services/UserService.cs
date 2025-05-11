@@ -15,12 +15,15 @@ public class UserService: IUserService
     private readonly IUserRepository _userRepository;
     private readonly IMapper _mapper;
     private readonly IPasswordHasher _passwordHasher;
+    private readonly ITokenService _tokenService;
 
-    public UserService(IUserRepository userRepository, IMapper mapper, IPasswordHasher passwordHasher)
+    public UserService(IUserRepository userRepository, IMapper mapper, 
+        IPasswordHasher passwordHasher, ITokenService tokenService)
     {
         _userRepository = userRepository;
         _mapper = mapper;
         _passwordHasher = passwordHasher;
+        _tokenService = tokenService;
     }
 
     public async Task<Result<UserDto>> GetByIdAsync(Guid id)
@@ -72,4 +75,42 @@ public class UserService: IUserService
 
         return Result<UserDto>.Success(userDto);
     }
+
+
+    public async Task<Result<AuthDto>> AuthenticateAsync(LoginRequestDto request)
+    {
+
+        var user = await _userRepository.GetByEmailAsync(request.Email);
+        if (user == null)
+        {
+            return Result<AuthDto>.Failure(new ErrorResponse
+            {
+                Message = "Invalid credentials.",
+                HttpCode = HttpStatusCode.Unauthorized
+            });
+        }
+
+        var isPasswordValid = _passwordHasher.VerifyPassword(user.PasswordHash, request.Password);
+        if (!isPasswordValid)
+        {
+            return Result<AuthDto>.Failure(new ErrorResponse
+            {
+                Message = "Invalid credentials.",
+                HttpCode = HttpStatusCode.Unauthorized
+            });
+        }
+
+
+        var token = _tokenService.GenerateToken(user);
+
+        var authDto = new AuthDto
+        {
+            Id = user.Id,
+            Username = user.Username,
+            Token = token
+        };
+
+        return Result<AuthDto>.Success(authDto);
+    }
+
 }

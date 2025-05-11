@@ -32,6 +32,20 @@ namespace BulletinBoard.API.Controllers
                 error => error.ToActionResult()
             );
         }
+
+        [HttpPost("login")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> Login([FromBody] LoginRequestDto request)
+        {
+            var result = await _userService.AuthenticateAsync(request);
+
+            return result.Match(
+                auth => Ok(auth),  // Повертаємо токен користувача
+                error => error.ToActionResult()
+            );
+        }
+
         //[HttpPost("register")]
         //[ProducesResponseType(StatusCodes.Status204NoContent)]
         //public async Task<IActionResult> Register([FromBody] RegisterUserRequest request)
