@@ -29,25 +29,22 @@ public class UserRepository: IUserRepository
     public async Task<User?> GetByEmailAsync(string email)
     {
         var emailParam = new SqlParameter("@Email", email);
-        return await _context.Users
-            .FromSqlRaw("EXEC spUser_GetByEmail @Email", emailParam)
-            .AsNoTracking()
-            .FirstOrDefaultAsync();
+        var users = await _context.Users
+            .FromSqlRaw("EXEC GetUserByEmail @Email", emailParam)
+            .ToListAsync();
+
+        return users.FirstOrDefault();
     }
 
     public async Task AddAsync(User user)
     {
-        var parameters = new[]
-        {
-            new SqlParameter("@Id", user.Id),
-            new SqlParameter("@Username", user.Username),
-            new SqlParameter("@Email", user.Email),
-            new SqlParameter("@PasswordHash", user.PasswordHash),
-            new SqlParameter("@Provider", user.Provider),
-            new SqlParameter("@CreatedAt", user.CreatedAt)
-        };
-
-        await _context.Database.ExecuteSqlRawAsync("EXEC spUser_Create @Id, @Username, @Email, @PasswordHash, @Provider, @CreatedAt", parameters);
+        await _context.Database.ExecuteSqlAsync($@"EXEC CreateUser 
+                @Id = {user.Id}, 
+                @Username = {user.Username}, 
+                @Email = {user.Email}, 
+                @PasswordHash = {user.PasswordHash}, 
+                @Provider = {user.Provider}, 
+                @CreatedAt = {user.CreatedAt}");
     }
 
 

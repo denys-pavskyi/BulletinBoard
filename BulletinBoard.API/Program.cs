@@ -12,6 +12,7 @@ using System;
 using BulletinBoard.BLL.Models.Requests;
 using BulletinBoard.BLL.Validations.Posts;
 using BulletinBoard.API.Middlewares;
+using BulletinBoard.BLL.Other.Hashers;
 
 namespace BulletinBoard.API
 {
@@ -44,7 +45,7 @@ namespace BulletinBoard.API
 
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<IPostService, PostService>();
-
+            builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 
             // Validators
 

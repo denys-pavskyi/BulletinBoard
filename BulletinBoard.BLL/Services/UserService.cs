@@ -6,6 +6,7 @@ using BulletinBoard.DAL.Entities;
 using BulletinBoard.DAL.Repositories.Interfaces;
 using System.Net;
 using BulletinBoard.BLL.Models.Requests;
+using BulletinBoard.BLL.Other.Hashers;
 
 namespace BulletinBoard.BLL.Services;
 
@@ -13,11 +14,13 @@ public class UserService: IUserService
 {
     private readonly IUserRepository _userRepository;
     private readonly IMapper _mapper;
+    private readonly IPasswordHasher _passwordHasher;
 
-    public UserService(IUserRepository userRepository, IMapper mapper)
+    public UserService(IUserRepository userRepository, IMapper mapper, IPasswordHasher passwordHasher)
     {
         _userRepository = userRepository;
         _mapper = mapper;
+        _passwordHasher = passwordHasher;
     }
 
     public async Task<Result<UserDto>> GetByIdAsync(Guid id)
@@ -37,37 +40,36 @@ public class UserService: IUserService
         return Result<UserDto>.Success(userDto);
     }
 
-    public async Task<Result> RegisterUserAsync(RegisterUserRequest request)
+    public async Task<Result<UserDto>> RegisterAsync(RegisterUserRequest request)
     {
+
+        var existingUser = await _userRepository.GetByEmailAsync(request.Email);
+        if (existingUser != null)
+        {
+            return Result<UserDto>.Failure(new ErrorResponse
+            {
+                Message = "User with this email already exists.",
+                HttpCode = HttpStatusCode.BadRequest
+            });
+        }
+
+
+        var hashedPassword = _passwordHasher.HashPassword(request.Password);
+
         var user = new User
         {
             Id = Guid.NewGuid(),
             Username = request.Username,
             Email = request.Email,
-            PasswordHash = request.Password
+            PasswordHash = hashedPassword,
+            Provider = "Local",
+            CreatedAt = DateTime.UtcNow
         };
 
-        await _userRepository.RegisterUserAsync(user);
-
-        return Result.Success();
-    }
-
-    public async Task<Result<UserDto>> AuthorizeUserAsync(AuthorizeUserRequest request)
-    {
-        var user = await _userRepository.AuthorizeUserAsync(request.Username, request.Password);
-
-        if (user is null)
-        {
-            return Result<UserDto>.Failure(new ErrorResponse
-            {
-                Message = "Invalid username or password.",
-                HttpCode = HttpStatusCode.Forbidden
-            });
-        }
+        await _userRepository.AddAsync(user);
 
         var userDto = _mapper.Map<UserDto>(user);
 
         return Result<UserDto>.Success(userDto);
     }
-
 }

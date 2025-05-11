@@ -18,29 +18,43 @@ namespace BulletinBoard.API.Controllers
             _userService = userService;
         }
 
+
+
         [HttpPost("register")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Register([FromBody] RegisterUserRequest request)
         {
-            var result = await _userService.RegisterUserAsync(request);
+            var result = await _userService.RegisterAsync(request);
 
             return result.Match(
-                NoContent,
+                user => CreatedAtAction(nameof(Register), new { id = user.Id }, user),
                 error => error.ToActionResult()
             );
         }
+        //[HttpPost("register")]
+        //[ProducesResponseType(StatusCodes.Status204NoContent)]
+        //public async Task<IActionResult> Register([FromBody] RegisterUserRequest request)
+        //{
+        //    var result = await _userService.RegisterUserAsync(request);
 
-        [HttpPost("login")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status403Forbidden)]
-        public async Task<IActionResult> Login([FromBody] AuthorizeUserRequest request)
-        {
-            var result = await _userService.AuthorizeUserAsync(request);
-            return result.Match(
-                Ok,
-                error => error.ToActionResult()
-            );
-        }
+        //    return result.Match(
+        //        NoContent,
+        //        error => error.ToActionResult()
+        //    );
+        //}
+
+        //[HttpPost("login")]
+        //[ProducesResponseType(StatusCodes.Status200OK)]
+        //[ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status403Forbidden)]
+        //public async Task<IActionResult> Login([FromBody] AuthorizeUserRequest request)
+        //{
+        //    var result = await _userService.AuthorizeUserAsync(request);
+        //    return result.Match(
+        //        Ok,
+        //        error => error.ToActionResult()
+        //    );
+        //}
 
 
     }
