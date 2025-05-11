@@ -33,7 +33,7 @@ public class UserRepository: IUserRepository
             @Id = {user.Id}, 
             @Username = {user.Username}, 
             @Email = {user.Email}, 
-            @Password = {user.Password}");
+            @Password = {user.PasswordHash}");
     }
 
     public async Task<User?> AuthorizeUserAsync(string username, string password)

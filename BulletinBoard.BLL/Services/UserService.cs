@@ -44,7 +44,7 @@ public class UserService: IUserService
             Id = Guid.NewGuid(),
             Username = request.Username,
             Email = request.Email,
-            Password = request.Password
+            PasswordHash = request.Password
         };
 
         await _userRepository.RegisterUserAsync(user);
