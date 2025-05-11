@@ -26,26 +26,28 @@ public class UserRepository: IUserRepository
         return users.FirstOrDefault();
     }
 
-    public async Task RegisterUserAsync(User user)
+    public async Task<User?> GetByEmailAsync(string email)
     {
-        await _context.Database.ExecuteSqlAsync($@"
-        EXEC RegisterUser 
-            @Id = {user.Id}, 
-            @Username = {user.Username}, 
-            @Email = {user.Email}, 
-            @Password = {user.PasswordHash}");
+        var emailParam = new SqlParameter("@Email", email);
+        return await _context.Users
+            .FromSqlRaw("EXEC spUser_GetByEmail @Email", emailParam)
+            .AsNoTracking()
+            .FirstOrDefaultAsync();
     }
 
-    public async Task<User?> AuthorizeUserAsync(string username, string password)
+    public async Task AddAsync(User user)
     {
-        var users = await _context.Users
-            .FromSql($@"
-            EXEC AuthorizeUser 
-                @Username = {username}, 
-                @Password = {password}")
-            .ToListAsync();
+        var parameters = new[]
+        {
+            new SqlParameter("@Id", user.Id),
+            new SqlParameter("@Username", user.Username),
+            new SqlParameter("@Email", user.Email),
+            new SqlParameter("@PasswordHash", user.PasswordHash),
+            new SqlParameter("@Provider", user.Provider),
+            new SqlParameter("@CreatedAt", user.CreatedAt)
+        };
 
-        return users.FirstOrDefault();
+        await _context.Database.ExecuteSqlRawAsync("EXEC spUser_Create @Id, @Username, @Email, @PasswordHash, @Provider, @CreatedAt", parameters);
     }
 
 

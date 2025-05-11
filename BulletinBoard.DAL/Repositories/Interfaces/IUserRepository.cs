@@ -1,4 +1,5 @@
 ﻿using BulletinBoard.DAL.Entities;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
 namespace BulletinBoard.DAL.Repositories.Interfaces;
@@ -6,6 +7,6 @@ namespace BulletinBoard.DAL.Repositories.Interfaces;
 public interface IUserRepository
 {
     Task<User?> GetByIdAsync(Guid id);
-    Task RegisterUserAsync(User user);
-    Task<User?> AuthorizeUserAsync(string username, string password);
+    Task<User?> GetByEmailAsync(string email);
+    Task AddAsync(User user);
 }
