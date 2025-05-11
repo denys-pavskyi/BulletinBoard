@@ -77,5 +77,66 @@ namespace BulletinBoard.WebClient.Controllers
             return View(viewModel);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> RenderSinglePostPartial(Guid postId)
+        {
+            var post = await _postService.GetByIdAsync(postId);
+            if (post is null) return NotFound();
+
+            var categories = CategoryData.Categories;
+            var subcategory = categories.SelectMany(c => c.Subcategories).FirstOrDefault(sc => sc.Id == post.SubcategoryId);
+            var category = categories.FirstOrDefault(c => c.Subcategories.Any(sc => sc.Id == post.SubcategoryId));
+            if (subcategory != null && category != null)
+            {
+                post.SubcategoryName = subcategory.Name;
+                post.CategoryName = category.Name;
+            }
+
+            return PartialView("_MyPostsList", new List<PostViewModel> { post });
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> Update(UpdatePostFormModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                TempData["Error"] = "Invalid form data";
+                return RedirectToAction("MyPosts");
+            }
+
+            var request = new UpdatePostRequest
+            {
+                Title = model.Title,
+                Description = model.Description,
+                SubcategoryId = model.SubcategoryId,
+                IsActive = model.IsActive
+            };
+
+            var result = await _postService.UpdateAsync(model.Id, request);
+            if (result.IsSuccess)
+            {
+                TempData["Success"] = "Post updated successfully";
+                return RedirectToAction("MyPosts");
+            }
+
+            TempData["Error"] = "Failed to update post";
+            return RedirectToAction("MyPosts");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Delete(Guid postId)
+        {
+            var result = await _postService.DeleteAsync(postId);
+            if (result.IsSuccess)
+            {
+                return RedirectToAction("MyPosts");
+            }
+
+
+            TempData["Error"] = "Failed to delete the post.";
+            return RedirectToAction("MyPosts");
+        }
+
     }
 }

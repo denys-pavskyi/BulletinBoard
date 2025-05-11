@@ -1,9 +1,9 @@
-﻿@model BulletinBoard.WebClient.Models.Posts.MyPostsViewModel
+﻿@using BulletinBoard.WebClient.Data
+@using BulletinBoard.WebClient.Models.Posts
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model BulletinBoard.WebClient.Models.Posts.MyPostsViewModel
 @{
     Layout = "_Layout";
-}
-
-@{
     ViewData["Title"] = "My Posts";
 }
 
@@ -11,14 +11,61 @@
     Create New Post
 </a>
 
-<!-- Container for dynamic list -->
+<!-- Posts list -->
 <div class="col-md-9">
     <div id="posts-list">
         @await Html.PartialAsync("_MyPostsList", Model.Posts)
     </div>
 </div>
 
-<!-- Modal for Delete Confirmation -->
+@await Html.PartialAsync("_EditPostModal", new UpdatePostFormModel())
+
+<!-- Modal window for editing -->
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editModalLabel">Edit Post</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editPostForm">
+                    <input type="hidden" id="editPostId" />
+
+                    <div class="mb-3">
+                        <label for="editTitle" class="form-label">Title</label>
+                        <input type="text" class="form-control" id="editTitle" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="editDescription" class="form-label">Description</label>
+                        <textarea class="form-control" id="editDescription"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editSubcategory" class="form-label">Subcategory</label>
+                        <select class="form-control" id="editSubcategory">
+                            @foreach (var category in CategoryData.Categories)
+                            {
+                                <optgroup label="@category.Name">
+                                    @foreach (var sub in category.Subcategories)
+                                    {
+                                        <option value="@sub.Id">@sub.Name</option>
+                                    }
+                                </optgroup>
+                            }
+                        </select>
+                    </div>
+                    <div class="form-check mb-3">
+                        <input type="checkbox" class="form-check-input" id="editIsActive" />
+                        <label class="form-check-label" for="editIsActive">Active</label>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for delete confirmation -->
 <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -31,32 +78,45 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+                <form id="deleteForm" method="post" asp-action="Delete" asp-controller="Posts">
+                    <input type="hidden" id="postIdToDelete" name="postId" />
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
             </div>
         </div>
     </div>
 </div>
 
-<script>
-    document.querySelectorAll('.btn-danger').forEach(button => {
-        button.addEventListener('click', function () {
-            var postId = this.getAttribute('data-post-id');
-            document.getElementById('confirmDeleteBtn').addEventListener('click', function () {
-                deletePost(postId);
+@section Scripts {
+    <script>
+        // Delete logic: set postId in delete modal form
+        document.querySelectorAll('.btn-danger[data-post-id]').forEach(button => {
+            button.addEventListener('click', function () {
+                var postId = this.getAttribute('data-post-id');
+                document.getElementById('postIdToDelete').value = postId;
             });
         });
-    });
 
-    function deletePost(postId) {
-        fetch(`/api/posts/delete/${postId}`, { method: 'DELETE' })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert('Post deleted successfully');
-                    location.reload();
-                } else {
-                    alert('Error deleting post');
-                }
+        // Edit logic: show modal with data for selected post
+        document.querySelectorAll('.edit-post-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                const postId = this.getAttribute('data-post-id');
+                const title = this.getAttribute('data-title');
+                const description = this.getAttribute('data-description');
+                const subcategoryId = this.getAttribute('data-subcategory-id');
+                const isActive = this.getAttribute('data-isactive') === 'true';
+
+                // Fill the form in the modal with the selected post data
+                document.getElementById('editPostId').value = postId;
+                document.getElementById('editTitle').value = title;
+                document.getElementById('editDescription').value = description;
+                document.getElementById('editSubcategory').value = subcategoryId;
+                document.getElementById('editIsActive').checked = isActive;
+
+                // Show the modal
+                const modal = new bootstrap.Modal(document.getElementById('editModal'));
+                modal.show();
             });
-    }
-</script>
+        });
+    </script>
+}

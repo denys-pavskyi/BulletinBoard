@@ -1,5 +1,7 @@
-﻿using BulletinBoard.WebClient.Models.Posts;
+﻿using BulletinBoard.WebClient.Models.Other;
+using BulletinBoard.WebClient.Models.Posts;
 using BulletinBoard.WebClient.Services.Interfaces;
+using System.Net;
 
 namespace BulletinBoard.WebClient.Services;
 
@@ -36,6 +38,60 @@ public class PostService: IPostService
     {
         var response = await _httpClient.GetFromJsonAsync<List<PostViewModel>>($"/api/posts/user/{userId}");
         return response ?? new List<PostViewModel>();
+    }
+
+    public async Task<PostViewModel?> GetByIdAsync(Guid postId)
+    {
+        var response = await _httpClient.GetFromJsonAsync<PostViewModel?>($"/api/posts/{postId}");
+        return response;
+
+    }
+
+    public async Task<Result> UpdateAsync(Guid id, UpdatePostRequest request)
+    {
+        var response = await _httpClient.PutAsJsonAsync($"/api/posts/{id}", request);
+
+        if (response.IsSuccessStatusCode)
+        {
+            return Result.Success();
+        }
+
+        return Result.Failure(new ErrorResponse
+        {
+            Message = "Failed to update post",
+            HttpCode = HttpStatusCode.BadRequest
+        });
+    }
+
+    public async Task<Result> DeleteAsync(Guid postId)
+    {
+        try
+        {
+            var response = await _httpClient.DeleteAsync($"/api/posts/{postId}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                return Result.Success();
+            }
+            else
+            {
+                var errorResponse = await response.Content.ReadAsStringAsync();
+                return Result.Failure(new ErrorResponse
+                {
+                    Message = errorResponse,
+                    HttpCode = response.StatusCode
+                });
+
+            }
+        }
+        catch (Exception ex)
+        {
+            return Result.Failure(new ErrorResponse
+            {
+                Message = "An error occured",
+                HttpCode = HttpStatusCode.BadRequest
+            });
+        }
     }
 
 }
