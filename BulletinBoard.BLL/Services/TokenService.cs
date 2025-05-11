@@ -2,9 +2,11 @@
 using BulletinBoard.DAL.Entities;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
+using Microsoft.IdentityModel.JsonWebTokens;
+using JwtRegisteredClaimNames = System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames;
 
 namespace BulletinBoard.BLL.Services;
 
@@ -17,27 +19,36 @@ public class TokenService : ITokenService
         _configuration = configuration;
     }
 
-    public string GenerateToken(User user)
+    public string GenerateAccessToken(User user)
     {
-        var claims = new[]
+        string secretKey = _configuration["JwtSettings:Secret"]!;
+        var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
+
+        var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+
+        var tokenDescriptor = new SecurityTokenDescriptor
         {
-            new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-            new Claim(JwtRegisteredClaimNames.UniqueName, user.Username),
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new Claim(ClaimTypes.Name, user.Username),
+            Subject = new ClaimsIdentity([
+                    new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+                    new Claim(JwtRegisteredClaimNames.Email, user.Email),
+                    new Claim(JwtRegisteredClaimNames.UniqueName, user.Username)
+                ]),
+            Expires = DateTime.UtcNow.AddMinutes(120),
+            SigningCredentials = credentials,
+            Issuer = _configuration["JwtSettings:Issuer"],
+            Audience = _configuration["JwtSettings:Audience"]
         };
 
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSettings:Secret"]));
-        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+        var handler = new JsonWebTokenHandler();
+        string token = handler.CreateToken(tokenDescriptor);
+        return token;
+    }
 
-        var token = new JwtSecurityToken(
-            issuer: _configuration["JwtSettings:Issuer"],
-            audience: _configuration["JwtSettings:Audience"],
-            claims: claims,
-            expires: DateTime.Now.AddHours(1),
-            signingCredentials: creds
-        );
-
-        return new JwtSecurityTokenHandler().WriteToken(token);
+    public string GenerateRefreshToken()
+    {
+        var randomBytes = new byte[32];
+        using var rng = RandomNumberGenerator.Create();
+        rng.GetBytes(randomBytes);
+        return Convert.ToBase64String(randomBytes);
     }
 }

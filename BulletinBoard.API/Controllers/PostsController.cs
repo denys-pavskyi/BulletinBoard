@@ -2,8 +2,10 @@
 using BulletinBoard.BLL.Models.DtoModels;
 using BulletinBoard.BLL.Models.Requests;
 using BulletinBoard.BLL.Other;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace BulletinBoard.API.Controllers
 {
@@ -79,12 +81,16 @@ namespace BulletinBoard.API.Controllers
             );
         }
 
+        [Authorize]
         [HttpGet("user/{userId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetByUserId(Guid userId)
         {
+            var currentUserId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+
+
             var result = await _postService.GetAllByUserIdAsync(userId);
 
             return result.Match(

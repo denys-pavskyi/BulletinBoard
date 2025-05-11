@@ -1,6 +1,7 @@
 ﻿using BulletinBoard.BLL.Interfaces;
 using BulletinBoard.BLL.Models.Requests;
 using BulletinBoard.BLL.Other;
+using BulletinBoard.BLL.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,10 +13,12 @@ namespace BulletinBoard.API.Controllers
     {
 
         private readonly IUserService _userService;
+        private readonly IRefreshTokenService _refreshTokenService;
 
-        public AuthController(IUserService userService)
+        public AuthController(IUserService userService, IRefreshTokenService refreshTokenService)
         {
             _userService = userService;
+            _refreshTokenService = refreshTokenService;
         }
 
 
@@ -41,34 +44,23 @@ namespace BulletinBoard.API.Controllers
             var result = await _userService.AuthenticateAsync(request);
 
             return result.Match(
-                auth => Ok(auth),  // Повертаємо токен користувача
+                Ok, 
                 error => error.ToActionResult()
             );
         }
 
-        //[HttpPost("register")]
-        //[ProducesResponseType(StatusCodes.Status204NoContent)]
-        //public async Task<IActionResult> Register([FromBody] RegisterUserRequest request)
-        //{
-        //    var result = await _userService.RegisterUserAsync(request);
+        [HttpPost("refresh-token")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequestDto request)
+        {
+            var result = await _refreshTokenService.RefreshTokenAsync(request.RefreshToken);
 
-        //    return result.Match(
-        //        NoContent,
-        //        error => error.ToActionResult()
-        //    );
-        //}
-
-        //[HttpPost("login")]
-        //[ProducesResponseType(StatusCodes.Status200OK)]
-        //[ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status403Forbidden)]
-        //public async Task<IActionResult> Login([FromBody] AuthorizeUserRequest request)
-        //{
-        //    var result = await _userService.AuthorizeUserAsync(request);
-        //    return result.Match(
-        //        Ok,
-        //        error => error.ToActionResult()
-        //    );
-        //}
+            return result.Match(
+                Ok,
+                error => error.ToActionResult()
+            );
+        }
 
 
     }

@@ -7,6 +7,7 @@ using BulletinBoard.DAL.Repositories.Interfaces;
 using System.Net;
 using BulletinBoard.BLL.Models.Requests;
 using BulletinBoard.BLL.Other.Hashers;
+using BulletinBoard.DAL.Repositories;
 
 namespace BulletinBoard.BLL.Services;
 
@@ -16,14 +17,17 @@ public class UserService: IUserService
     private readonly IMapper _mapper;
     private readonly IPasswordHasher _passwordHasher;
     private readonly ITokenService _tokenService;
+    private readonly IRefreshTokenRepository _refreshTokenRepository;
 
     public UserService(IUserRepository userRepository, IMapper mapper, 
-        IPasswordHasher passwordHasher, ITokenService tokenService)
+        IPasswordHasher passwordHasher, ITokenService tokenService, 
+        IRefreshTokenRepository refreshTokenRepository)
     {
         _userRepository = userRepository;
         _mapper = mapper;
         _passwordHasher = passwordHasher;
         _tokenService = tokenService;
+        _refreshTokenRepository = refreshTokenRepository;
     }
 
     public async Task<Result<UserDto>> GetByIdAsync(Guid id)
@@ -101,16 +105,25 @@ public class UserService: IUserService
         }
 
 
-        var token = _tokenService.GenerateToken(user);
+        var accessToken = _tokenService.GenerateAccessToken(user);
+        var refreshToken = _tokenService.GenerateRefreshToken();
+        var expiresAt = DateTime.UtcNow.AddDays(7);
 
-        var authDto = new AuthDto
+
+        await _refreshTokenRepository.AddAsync(new RefreshToken
+        {
+            Id = Guid.NewGuid(),
+            UserId = user.Id,
+            Token = refreshToken,
+            ExpiresAt = expiresAt
+        });
+
+        return Result<AuthDto>.Success(new AuthDto
         {
             Id = user.Id,
             Username = user.Username,
-            Token = token
-        };
-
-        return Result<AuthDto>.Success(authDto);
+            Token = accessToken
+        });
     }
 
 }
