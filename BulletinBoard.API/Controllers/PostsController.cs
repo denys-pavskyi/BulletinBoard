@@ -79,7 +79,7 @@ namespace BulletinBoard.API.Controllers
             );
         }
 
-        //[Authorize]
+        [Authorize]
         [HttpGet("user/{userId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]

@@ -1,8 +1,9 @@
-﻿using BulletinBoard.WebClient.Models.Users;
+﻿using BulletinBoard.WebClient.Models.Other;
+using BulletinBoard.WebClient.Models.Users;
 
 namespace BulletinBoard.WebClient.Services.Interfaces;
 
 public interface IUserService
 {
-    Task<UserViewModel?> GetByIdAsync(Guid id);
+    Task<Result<UserViewModel>> GetByIdAsync(Guid userId);
 }
