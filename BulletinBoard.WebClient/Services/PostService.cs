@@ -8,13 +8,15 @@ namespace BulletinBoard.WebClient.Services;
 public class PostService: IPostService
 {
     private readonly HttpClient _httpClient;
+    private readonly IApiService _apiService;
 
-    public PostService(IHttpClientFactory httpClientFactory)
+    public PostService(IHttpClientFactory httpClientFactory, IApiService apiService)
     {
+        _apiService = apiService;
         _httpClient = httpClientFactory.CreateClient("ApiClient");
     }
 
-    public async Task<List<PostViewModel>> GetFilteredAsync(List<int> subcategoryIds, bool isActive)
+    public async Task<Result<List<PostViewModel>>> GetFilteredAsync(List<int> subcategoryIds, bool isActive)
     {
         var request = new
         {
@@ -24,27 +26,25 @@ public class PostService: IPostService
 
         var response = await _httpClient.PostAsJsonAsync("/api/posts/filter", request);
 
-        if (!response.IsSuccessStatusCode)
-        {
-            return new List<PostViewModel>();
-        }
-
-        var result = await response.Content.ReadFromJsonAsync<List<PostViewModel>>();
-        return result ?? new List<PostViewModel>();
+        return await _apiService.HandleApiResponse<List<PostViewModel>>(response);
     }
 
-
-    public async Task<List<PostViewModel>> GetPostsByUserIdAsync(Guid userId)
+    public async Task<Result<List<PostViewModel>>> GetPostsByUserIdAsync(Guid userId)
     {
-        var response = await _httpClient.GetFromJsonAsync<List<PostViewModel>>($"/api/posts/user/{userId}");
-        return response ?? new List<PostViewModel>();
+        var response = await _httpClient.GetAsync($"/api/posts/user/{userId}");
+        return await _apiService.HandleApiResponse<List<PostViewModel>>(response);
     }
 
-    public async Task<PostViewModel?> GetByIdAsync(Guid postId)
+    public async Task<Result<PostViewModel?>> GetByIdAsync(Guid postId)
     {
         var response = await _httpClient.GetFromJsonAsync<PostViewModel?>($"/api/posts/{postId}");
-        return response;
 
+        if (response == null)
+        {
+            return Result<PostViewModel?>.Failure("Post not found.");
+        }
+
+        return Result<PostViewModel?>.Success(response);
     }
 
     public async Task<Result> UpdateAsync(Guid id, UpdatePostRequest request)
@@ -81,15 +81,14 @@ public class PostService: IPostService
                     Message = errorResponse,
                     HttpCode = response.StatusCode
                 });
-
             }
         }
         catch (Exception ex)
         {
             return Result.Failure(new ErrorResponse
             {
-                Message = "An error occured",
-                HttpCode = HttpStatusCode.BadRequest
+                Message = $"An error occurred: {ex.Message}",
+                HttpCode = HttpStatusCode.InternalServerError
             });
         }
     }

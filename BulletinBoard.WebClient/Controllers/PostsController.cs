@@ -3,6 +3,7 @@ using BulletinBoard.WebClient.Models.Posts;
 using BulletinBoard.WebClient.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Hosting;
 
 namespace BulletinBoard.WebClient.Controllers
 {
@@ -25,7 +26,7 @@ namespace BulletinBoard.WebClient.Controllers
             var model = new PostIndexViewModel
             {
                 Categories = categories,
-                Posts = posts,
+                Posts = posts.Value,
                 SelectedSubcategoryIds = allSubcategoryIds,
                 IsActive = true
             };
@@ -37,7 +38,15 @@ namespace BulletinBoard.WebClient.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> FilterPartial([FromBody] FilterRequestDto request)
         {
-            var posts = await _postService.GetFilteredAsync(request.SubcategoryIds, request.IsActive);
+            var result = await _postService.GetFilteredAsync(request.SubcategoryIds, request.IsActive);
+
+            if (!result.IsSuccess)
+            {
+                TempData["Error"] = result.ErrorMessage ?? "Unable to filter posts";
+                return RedirectToAction("Index", "Posts");
+            }
+
+            var posts = result.Value;
 
             foreach (var item in posts)
             {
@@ -62,16 +71,18 @@ namespace BulletinBoard.WebClient.Controllers
         public async Task<IActionResult> MyPosts()
         {
             var userId = Guid.Parse("D2B23AD3-BD8B-4CA6-AA22-B8E5B3C47CF0");
-            var posts = await _postService.GetPostsByUserIdAsync(userId);
+            var result = await _postService.GetPostsByUserIdAsync(userId);
 
-            if (!posts.Any())
+            if (!result.IsSuccess)
             {
-                return NoContent();
+
+                TempData["Error"] = result.ErrorMessage ?? "Unable to load posts";
+                return RedirectToAction("Index", "Posts");
             }
 
             var viewModel = new MyPostsViewModel
             {
-                Posts = posts
+                Posts = result.Value
             };
 
             return View(viewModel);
@@ -80,12 +91,14 @@ namespace BulletinBoard.WebClient.Controllers
         [HttpGet]
         public async Task<IActionResult> RenderSinglePostPartial(Guid postId)
         {
-            var post = await _postService.GetByIdAsync(postId);
-            if (post is null) return NotFound();
+            var result = await _postService.GetByIdAsync(postId);
+            if (!result.IsSuccess) return NotFound();
 
+            var post = result.Value;
             var categories = CategoryData.Categories;
             var subcategory = categories.SelectMany(c => c.Subcategories).FirstOrDefault(sc => sc.Id == post.SubcategoryId);
             var category = categories.FirstOrDefault(c => c.Subcategories.Any(sc => sc.Id == post.SubcategoryId));
+
             if (subcategory != null && category != null)
             {
                 post.SubcategoryName = subcategory.Name;
@@ -97,6 +110,7 @@ namespace BulletinBoard.WebClient.Controllers
 
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Update(UpdatePostFormModel model)
         {
             if (!ModelState.IsValid)
@@ -120,21 +134,22 @@ namespace BulletinBoard.WebClient.Controllers
                 return RedirectToAction("MyPosts");
             }
 
-            TempData["Error"] = "Failed to update post";
+            TempData["Error"] = result.Error.Message ?? "Failed to update post";
             return RedirectToAction("MyPosts");
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(Guid postId)
         {
             var result = await _postService.DeleteAsync(postId);
             if (result.IsSuccess)
             {
+                TempData["Success"] = "Post deleted successfully";
                 return RedirectToAction("MyPosts");
             }
 
-
-            TempData["Error"] = "Failed to delete the post.";
+            TempData["Error"] = result.Error.Message ?? "Failed to delete the post.";
             return RedirectToAction("MyPosts");
         }
 
