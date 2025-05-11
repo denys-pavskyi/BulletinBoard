@@ -10,4 +10,5 @@ public interface IPostService
     Task<Result<PostViewModel?>> GetByIdAsync(Guid postId);
     Task<Result> UpdateAsync(Guid id, UpdatePostRequest request);
     Task<Result> DeleteAsync(Guid postId);
+    Task<Result> AddAsync(CreatePostFormModel request);
 }

@@ -21,12 +21,29 @@ namespace BulletinBoard.WebClient.Controllers
             var categories = CategoryData.Categories;
             var allSubcategoryIds = categories.SelectMany(c => c.Subcategories.Select(s => s.Id)).ToList();
 
-            var posts = await _postService.GetFilteredAsync(allSubcategoryIds, true);
+            var postsResult = await _postService.GetFilteredAsync(allSubcategoryIds, true);
+
+            var posts = postsResult.Value;
+
+            if (posts != null)
+            {
+                foreach (var post in posts)
+                {
+                    if (post.CreatedDate.Kind == DateTimeKind.Utc)
+                    {
+                        post.CreatedDate = TimeZoneInfo.ConvertTimeFromUtc(post.CreatedDate, TimeZoneInfo.Local);
+                    }
+                    else
+                    {
+                        post.CreatedDate = TimeZoneInfo.ConvertTimeFromUtc(DateTime.SpecifyKind(post.CreatedDate, DateTimeKind.Utc), TimeZoneInfo.Local);
+                    }
+                }
+            }
 
             var model = new PostIndexViewModel
             {
                 Categories = categories,
-                Posts = posts.Value,
+                Posts = posts,
                 SelectedSubcategoryIds = allSubcategoryIds,
                 IsActive = true
             };
@@ -64,6 +81,21 @@ namespace BulletinBoard.WebClient.Controllers
                 }
             }
 
+            if (posts != null)
+            {
+                foreach (var post in posts)
+                {
+                    if (post.CreatedDate.Kind == DateTimeKind.Utc)
+                    {
+                        post.CreatedDate = TimeZoneInfo.ConvertTimeFromUtc(post.CreatedDate, TimeZoneInfo.Local);
+                    }
+                    else
+                    {
+                        post.CreatedDate = TimeZoneInfo.ConvertTimeFromUtc(DateTime.SpecifyKind(post.CreatedDate, DateTimeKind.Utc), TimeZoneInfo.Local);
+                    }
+                }
+            }
+
             return PartialView("_PostList", posts);
         }
 
@@ -80,9 +112,26 @@ namespace BulletinBoard.WebClient.Controllers
                 return RedirectToAction("Index", "Posts");
             }
 
+            var posts = result.Value;
+
+            if (posts != null)
+            {
+                foreach (var post in posts)
+                {
+                    if (post.CreatedDate.Kind == DateTimeKind.Utc)
+                    {
+                        post.CreatedDate = TimeZoneInfo.ConvertTimeFromUtc(post.CreatedDate, TimeZoneInfo.Local);
+                    }
+                    else
+                    {
+                        post.CreatedDate = TimeZoneInfo.ConvertTimeFromUtc(DateTime.SpecifyKind(post.CreatedDate, DateTimeKind.Utc), TimeZoneInfo.Local);
+                    }
+                }
+            }
+
             var viewModel = new MyPostsViewModel
             {
-                Posts = result.Value
+                Posts = posts
             };
 
             return View(viewModel);
@@ -150,6 +199,28 @@ namespace BulletinBoard.WebClient.Controllers
             }
 
             TempData["Error"] = result.Error.Message ?? "Failed to delete the post.";
+            return RedirectToAction("MyPosts");
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(CreatePostFormModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                TempData["Error"] = "Invalid form data";
+                return RedirectToAction("MyPosts");
+            }
+
+            var result = await _postService.AddAsync(model);
+            if (result.IsSuccess)
+            {
+                TempData["Success"] = "Post created successfully";
+                return RedirectToAction("MyPosts");
+            }
+
+            TempData["Error"] = result.Error.Message ?? "Failed to create post";
             return RedirectToAction("MyPosts");
         }
 

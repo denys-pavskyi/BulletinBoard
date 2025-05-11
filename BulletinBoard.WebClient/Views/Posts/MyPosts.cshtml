@@ -7,9 +7,9 @@
     ViewData["Title"] = "My Posts";
 }
 
-<a href="/Posts/Create" class="btn btn-primary mb-3">
+<button type="button" class="btn btn-primary mb-3 create-post-btn">
     Create New Post
-</a>
+</button>
 
 <!-- Posts list -->
 <div class="col-md-9">
@@ -19,6 +19,7 @@
 </div>
 
 @await Html.PartialAsync("_EditPostModal", new UpdatePostFormModel())
+@await Html.PartialAsync("_CreatePostModal", new CreatePostFormModel())
 
 <!-- Modal window for editing -->
 <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
@@ -89,7 +90,6 @@
 
 @section Scripts {
     <script>
-        // Delete logic: set postId in delete modal form
         document.querySelectorAll('.btn-danger[data-post-id]').forEach(button => {
             button.addEventListener('click', function () {
                 var postId = this.getAttribute('data-post-id');
@@ -97,7 +97,6 @@
             });
         });
 
-        // Edit logic: show modal with data for selected post
         document.querySelectorAll('.edit-post-btn').forEach(button => {
             button.addEventListener('click', function () {
                 const postId = this.getAttribute('data-post-id');
@@ -106,17 +105,31 @@
                 const subcategoryId = this.getAttribute('data-subcategory-id');
                 const isActive = this.getAttribute('data-isactive') === 'true';
 
-                // Fill the form in the modal with the selected post data
                 document.getElementById('editPostId').value = postId;
                 document.getElementById('editTitle').value = title;
                 document.getElementById('editDescription').value = description;
                 document.getElementById('editSubcategory').value = subcategoryId;
                 document.getElementById('editIsActive').checked = isActive;
 
-                // Show the modal
                 const modal = new bootstrap.Modal(document.getElementById('editModal'));
                 modal.show();
             });
         });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const createButton = document.querySelector('.create-post-btn');
+            if (createButton) {
+                createButton.addEventListener('click', function () {
+                    document.getElementById('createTitle').value = '';
+                    document.getElementById('createDescription').value = '';
+                    document.getElementById('createSubcategory').selectedIndex = 0;
+                    document.getElementById('createIsActive').checked = true;
+
+                    const modal = new bootstrap.Modal(document.getElementById('createModal'));
+                    modal.show();
+                });
+            }
+        });
+        
     </script>
 }

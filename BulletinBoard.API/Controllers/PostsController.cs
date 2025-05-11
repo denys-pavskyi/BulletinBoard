@@ -41,8 +41,6 @@ namespace BulletinBoard.API.Controllers
                 _ => NoContent(),
                 error => error.ToActionResult()
             );
-
-
         }
 
         [HttpGet("{id}")]

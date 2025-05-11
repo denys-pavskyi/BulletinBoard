@@ -93,4 +93,21 @@ public class PostService: IPostService
         }
     }
 
+    public async Task<Result> AddAsync(CreatePostFormModel request)
+    {
+        var response = await _httpClient.PostAsJsonAsync("/api/posts", request);
+
+        if (response.IsSuccessStatusCode)
+        {
+            return Result.Success();
+        }
+
+        var errorResponse = await response.Content.ReadFromJsonAsync<ErrorResponse>();
+        return Result.Failure(errorResponse ?? new ErrorResponse
+        {
+            Message = "Failed to add post",
+            HttpCode = HttpStatusCode.BadRequest
+        });
+    }
+
 }
