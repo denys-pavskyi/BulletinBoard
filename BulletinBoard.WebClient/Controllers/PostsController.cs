@@ -220,6 +220,11 @@ namespace BulletinBoard.WebClient.Controllers
                 return RedirectToAction("MyPosts");
             }
 
+            if (!_userContextService.IsAuthenticated || _userContextService.UserId is null)
+            {
+                return RedirectToAction("Login", "Auth");
+            }
+
             var result = await _postService.AddAsync(model);
             if (result.IsSuccess)
             {
