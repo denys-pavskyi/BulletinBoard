@@ -28,7 +28,7 @@ namespace BulletinBoard.WebClient
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<IPostService, PostService>();
             builder.Services.AddScoped<IApiService, ApiService>();
-
+            builder.Services.AddScoped<IUserContextService, UserContextService>();
 
             var app = builder.Build();
 

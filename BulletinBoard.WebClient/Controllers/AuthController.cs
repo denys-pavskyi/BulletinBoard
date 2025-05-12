@@ -13,8 +13,14 @@ namespace BulletinBoard.WebClient.Controllers
             _apiService = apiService;
         }
 
+        [HttpGet]
         public IActionResult Logout()
         {
+
+            Response.Cookies.Delete("jwt");
+            Response.Cookies.Delete("uid");
+            Response.Cookies.Delete("username");
+
             return RedirectToAction("Index", "Posts");
         }
 
