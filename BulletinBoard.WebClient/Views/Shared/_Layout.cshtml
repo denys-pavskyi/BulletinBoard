@@ -1,4 +1,7 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -16,17 +19,31 @@
         @TempData["Error"]
     </div>
 }
+
+@{
+    var isAuthenticated = HttpContextAccessor.HttpContext?.Request.Cookies["JwtToken"] != null;
+}
 <body>
     <header>
         <nav class="navbar navbar-expand-sm navbar-light bg-white border-bottom box-shadow mb-3 custom-navbar">
             <div class="container-fluid d-flex justify-content-between">
                 <div class="navbar-nav">
                     <a class="nav-link" asp-controller="Posts" asp-action="Index">Home</a>
-                    <a class="nav-link" asp-controller="Posts" asp-action="MyPosts">My Posts</a>
-                    <a class="nav-link" asp-controller="Users" asp-action="Profile">Profile</a>
+                    @if (isAuthenticated)
+                    {
+                        <a class="nav-link" asp-controller="Posts" asp-action="MyPosts">My Posts</a>
+                        <a class="nav-link" asp-controller="Users" asp-action="Profile">Profile</a>
+                    }
                 </div>
                 <div class="navbar-nav">
-                    <a class="nav-link text-danger" asp-controller="Auth" asp-action="Logout">Logout</a>
+                    @if (isAuthenticated)
+                    {
+                        <a class="nav-link text-danger" asp-controller="Auth" asp-action="Logout">Logout</a>
+                    }
+                    else
+                    {
+                        <a class="nav-link" asp-controller="Auth" asp-action="Login">Login</a>
+                    }
                 </div>
             </div>
         </nav>

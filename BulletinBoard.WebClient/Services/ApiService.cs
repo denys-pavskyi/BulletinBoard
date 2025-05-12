@@ -1,6 +1,9 @@
 ﻿using BulletinBoard.WebClient.Services.Interfaces;
 using System.Net;
 using BulletinBoard.WebClient.Models.Other;
+using System.Text;
+using BulletinBoard.WebClient.Models.Auth;
+using Newtonsoft.Json;
 
 namespace BulletinBoard.WebClient.Services;
 
@@ -8,9 +11,9 @@ public class ApiService: IApiService
 {
     private readonly HttpClient _httpClient;
 
-    public ApiService(HttpClient httpClient)
+    public ApiService(IHttpClientFactory httpClientFactory)
     {
-        _httpClient = httpClient;
+        _httpClient = httpClientFactory.CreateClient("ApiClient");
     }
 
 
@@ -37,4 +40,16 @@ public class ApiService: IApiService
                 return Result<T>.Failure(error?.Message ?? "Unknown error occurred.");
         }
     }
+
+    public async Task<Result<AuthDto>> LoginAsync(LoginRequest request)
+    {
+        var json = JsonConvert.SerializeObject(request);
+        var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+
+        var response = await _httpClient.PostAsync("/api/auth/login", content);
+
+        return await HandleApiResponse<AuthDto>(response);
+    }
+
 }

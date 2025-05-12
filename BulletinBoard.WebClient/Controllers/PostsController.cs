@@ -102,6 +102,11 @@ namespace BulletinBoard.WebClient.Controllers
 
         public async Task<IActionResult> MyPosts()
         {
+            if (!Request.Cookies.ContainsKey("JwtToken"))
+            {
+                //return RedirectToAction("Login", "Auth");
+            }
+
             var userId = Guid.Parse("D2B23AD3-BD8B-4CA6-AA22-B8E5B3C47CF0");
             var result = await _postService.GetPostsByUserIdAsync(userId);
 
