@@ -4,15 +4,18 @@ using BulletinBoard.WebClient.Models.Other;
 using System.Text;
 using BulletinBoard.WebClient.Models.Auth;
 using Newtonsoft.Json;
+using System.Net.Http.Headers;
 
 namespace BulletinBoard.WebClient.Services;
 
 public class ApiService: IApiService
 {
     private readonly HttpClient _httpClient;
+    private readonly IUserContextService _userContextService;
 
-    public ApiService(IHttpClientFactory httpClientFactory)
+    public ApiService(IHttpClientFactory httpClientFactory, IUserContextService userContextService)
     {
+        _userContextService = userContextService;
         _httpClient = httpClientFactory.CreateClient("ApiClient");
     }
 
@@ -48,6 +51,17 @@ public class ApiService: IApiService
 
 
         var response = await _httpClient.PostAsync("/api/auth/login", content);
+
+        return await HandleApiResponse<AuthDto>(response);
+    }
+
+
+    public async Task<Result<AuthDto>> RegisterAsync(RegisterUserRequest request)
+    {
+        var json = JsonConvert.SerializeObject(request);
+        var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+        var response = await _httpClient.PostAsync("/api/auth/register", content);
 
         return await HandleApiResponse<AuthDto>(response);
     }

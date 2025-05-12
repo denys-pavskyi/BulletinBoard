@@ -1,6 +1,9 @@
 ﻿using BulletinBoard.WebClient.Models.Auth;
 using BulletinBoard.WebClient.Services.Interfaces;
+using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
+using LoginRequest = BulletinBoard.WebClient.Models.Auth.LoginRequest;
+
 
 namespace BulletinBoard.WebClient.Controllers
 {
@@ -79,5 +82,37 @@ namespace BulletinBoard.WebClient.Controllers
 
             return RedirectToAction("Index", "Posts");
         }
+
+        [HttpGet]
+        public IActionResult Register()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Register(RegisterViewModel model)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
+
+            var registerRequest = new RegisterUserRequest
+            {
+                Username = model.Username,
+                Email = model.Email,
+                Password = model.Password
+            };
+
+            var response = await _apiService.RegisterAsync(registerRequest);
+
+            if (!response.IsSuccess)
+            {
+                ModelState.AddModelError(string.Empty, response.ErrorMessage ?? "Registration failed");
+                return View(model);
+            }
+
+            return RedirectToAction("Login", "Auth");
+        }
+
     }
 }

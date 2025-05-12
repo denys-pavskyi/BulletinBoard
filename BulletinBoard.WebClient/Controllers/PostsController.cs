@@ -10,10 +10,12 @@ namespace BulletinBoard.WebClient.Controllers
     public class PostsController : Controller
     {
         private readonly IPostService _postService;
+        private readonly IUserContextService _userContextService;
 
-        public PostsController(IPostService postService)
+        public PostsController(IPostService postService, IUserContextService userContextService)
         {
             _postService = postService;
+            _userContextService = userContextService;
         }
 
         public async Task<IActionResult> Index()
@@ -102,9 +104,9 @@ namespace BulletinBoard.WebClient.Controllers
 
         public async Task<IActionResult> MyPosts()
         {
-            if (!Request.Cookies.ContainsKey("JwtToken"))
+            if (!_userContextService.IsAuthenticated)
             {
-                //return RedirectToAction("Login", "Auth");
+                return RedirectToAction("Login", "Auth");
             }
 
             var userId = Guid.Parse("D2B23AD3-BD8B-4CA6-AA22-B8E5B3C47CF0");

@@ -1,4 +1,5 @@
-﻿using BulletinBoard.WebClient.Services.Interfaces;
+﻿using BulletinBoard.WebClient.Services;
+using BulletinBoard.WebClient.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BulletinBoard.WebClient.Controllers
@@ -6,14 +7,21 @@ namespace BulletinBoard.WebClient.Controllers
     public class UsersController : Controller
     {
         private readonly IUserService _userService;
+        private readonly IUserContextService _userContextService;
 
-        public UsersController(IUserService userService)
+        public UsersController(IUserService userService, IUserContextService userContextService)
         {
             _userService = userService;
+            _userContextService = userContextService;
         }
 
         public async Task<IActionResult> Profile()
         {
+            if (!_userContextService.IsAuthenticated)
+            {
+                return RedirectToAction("Login", "Auth");
+            }
+
             var userId = Guid.Parse("D2B23AD3-BD8B-4CA6-AA22-B8E5B3C47CF0");
 
 
