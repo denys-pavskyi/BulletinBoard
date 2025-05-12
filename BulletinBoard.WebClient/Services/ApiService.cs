@@ -4,7 +4,6 @@ using BulletinBoard.WebClient.Models.Other;
 using System.Text;
 using BulletinBoard.WebClient.Models.Auth;
 using Newtonsoft.Json;
-using System.Net.Http.Headers;
 
 namespace BulletinBoard.WebClient.Services;
 

@@ -12,7 +12,6 @@ public static class InitialData
         new Category { Id = 4, Name = "Others" }
     ];
 
-
     public static List<Subcategory> Subcategories =
     [
         // Home Appliances

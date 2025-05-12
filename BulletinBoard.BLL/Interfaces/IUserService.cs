@@ -1,7 +1,6 @@
 ﻿using BulletinBoard.BLL.Models.DtoModels;
 using BulletinBoard.BLL.Models.Requests;
 using BulletinBoard.BLL.Other;
-using System.Threading.Tasks;
 
 namespace BulletinBoard.BLL.Interfaces;
 

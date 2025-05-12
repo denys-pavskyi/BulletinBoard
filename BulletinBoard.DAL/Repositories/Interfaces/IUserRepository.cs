@@ -1,6 +1,4 @@
 ﻿using BulletinBoard.DAL.Entities;
-using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
 
 namespace BulletinBoard.DAL.Repositories.Interfaces;
 

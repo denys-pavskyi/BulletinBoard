@@ -5,7 +5,6 @@ using BulletinBoard.BLL.Other;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace BulletinBoard.API.Controllers
 {
@@ -90,9 +89,6 @@ namespace BulletinBoard.API.Controllers
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetByUserId(Guid userId)
         {
-            //var currentUserId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
-
-
             var result = await _postService.GetAllByUserIdAsync(userId);
 
             return result.Match(
@@ -109,8 +105,6 @@ namespace BulletinBoard.API.Controllers
                 Ok,
                 error => error.ToActionResult());
         }
-
-
 
     }
 }

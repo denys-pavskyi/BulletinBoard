@@ -1,5 +1,4 @@
 ﻿namespace BulletinBoard.BLL.Models.DtoModels;
-
 public class PostDto
 {
     public Guid Id { get; set; }

@@ -1,5 +1,4 @@
-﻿using BulletinBoard.WebClient.Services;
-using BulletinBoard.WebClient.Services.Interfaces;
+﻿using BulletinBoard.WebClient.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BulletinBoard.WebClient.Controllers

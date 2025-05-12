@@ -1,6 +1,4 @@
-﻿using System.Net;
-
-namespace BulletinBoard.API.Middlewares;
+﻿namespace BulletinBoard.API.Middlewares;
 
 public class GlobalExceptionHandlingMiddleware
 {
@@ -35,7 +33,6 @@ public class GlobalExceptionHandlingMiddleware
 
             await context.Response.WriteAsJsonAsync(response);
         }
-
 
     }
 }

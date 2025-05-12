@@ -1,7 +1,5 @@
 ﻿using BulletinBoard.WebClient.Models.Auth;
-using BulletinBoard.WebClient.Services;
 using BulletinBoard.WebClient.Services.Interfaces;
-using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using LoginRequest = BulletinBoard.WebClient.Models.Auth.LoginRequest;
 

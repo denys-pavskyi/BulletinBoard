@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace BulletinBoard.BLL.Models.DtoModels;
+﻿namespace BulletinBoard.BLL.Models.DtoModels;
 
 public class UserDto
 {

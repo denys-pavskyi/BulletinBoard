@@ -7,7 +7,6 @@ using BulletinBoard.DAL.Repositories.Interfaces;
 using System.Net;
 using BulletinBoard.BLL.Models.Requests;
 using BulletinBoard.BLL.Other.Hashers;
-using BulletinBoard.DAL.Repositories;
 
 namespace BulletinBoard.BLL.Services;
 
@@ -79,7 +78,6 @@ public class UserService: IUserService
 
         return Result<UserDto>.Success(userDto);
     }
-
 
     public async Task<Result<AuthDto>> AuthenticateAsync(LoginRequestDto request)
     {

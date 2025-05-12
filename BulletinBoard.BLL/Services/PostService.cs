@@ -1,14 +1,11 @@
 ﻿using AutoMapper;
-using Azure.Core;
 using BulletinBoard.BLL.Interfaces;
 using BulletinBoard.BLL.Models.DtoModels;
 using BulletinBoard.BLL.Models.Requests;
 using BulletinBoard.BLL.Other;
 using BulletinBoard.BLL.Validations.Posts;
 using BulletinBoard.DAL.Entities;
-using BulletinBoard.DAL.Repositories;
 using BulletinBoard.DAL.Repositories.Interfaces;
-using FluentValidation;
 using System.Net;
 
 namespace BulletinBoard.BLL.Services;
@@ -75,8 +72,6 @@ public class PostService: IPostService
 
         return Result<Guid>.Success(post.Id);
     }
-
-
     public async Task<Result<PostDto>> GetByIdAsync(Guid id)
     {
         var post = await _postRepository.GetByIdAsync(id);
@@ -163,7 +158,6 @@ public class PostService: IPostService
         return Result<List<PostDto>>.Success(dto);
     }
 
-
     public async Task<Result<List<PostDto>>> GetFilteredAsync(List<int> subcategoryIds, bool isActive)
     {
         if (subcategoryIds.Count > 100)
@@ -182,6 +176,5 @@ public class PostService: IPostService
 
         return Result<List<PostDto>>.Success(_mapper.Map<List<PostDto>>(posts));
     }
-
 
 }

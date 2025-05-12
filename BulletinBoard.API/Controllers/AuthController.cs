@@ -1,8 +1,6 @@
 ﻿using BulletinBoard.BLL.Interfaces;
 using BulletinBoard.BLL.Models.Requests;
 using BulletinBoard.BLL.Other;
-using BulletinBoard.BLL.Services;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BulletinBoard.API.Controllers
@@ -20,8 +18,6 @@ namespace BulletinBoard.API.Controllers
             _userService = userService;
             _refreshTokenService = refreshTokenService;
         }
-
-
 
         [HttpPost("register")]
         [ProducesResponseType(StatusCodes.Status201Created)]
@@ -61,7 +57,6 @@ namespace BulletinBoard.API.Controllers
                 error => error.ToActionResult()
             );
         }
-
 
     }
 }

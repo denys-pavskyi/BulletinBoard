@@ -47,5 +47,4 @@ public class UserRepository: IUserRepository
                 @CreatedAt = {user.CreatedAt}");
     }
 
-
 }

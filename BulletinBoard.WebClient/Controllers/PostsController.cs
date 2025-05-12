@@ -67,7 +67,7 @@ namespace BulletinBoard.WebClient.Controllers
 
             var posts = result.Value;
 
-            foreach (var item in posts)
+            foreach (var item in posts!)
             {
                 var subcategory = CategoryData.Categories
                     .SelectMany(c => c.Subcategories)

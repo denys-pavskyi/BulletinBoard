@@ -1,7 +1,6 @@
 ﻿using BulletinBoard.BLL.Interfaces;
 using BulletinBoard.BLL.Models.DtoModels;
 using BulletinBoard.BLL.Other;
-using BulletinBoard.DAL.Repositories;
 using BulletinBoard.DAL.Repositories.Interfaces;
 using System.Net;
 
@@ -20,8 +19,6 @@ public class RefreshTokenService: IRefreshTokenService
         _tokenService = tokenService;
         _userRepository = userRepository;
     }
-
-
 
     public async Task<Result<AuthDto>> RefreshTokenAsync(string oldToken)
     {
@@ -60,6 +57,5 @@ public class RefreshTokenService: IRefreshTokenService
 
         return Result<AuthDto>.Success(dto);
     }
-
 
 }

@@ -1,7 +1,6 @@
 ﻿using BulletinBoard.DAL.Configurations;
 using BulletinBoard.DAL.Entities;
 using BulletinBoard.DAL.Repositories.Interfaces;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
 namespace BulletinBoard.DAL.Repositories;
@@ -60,6 +59,5 @@ public class RefreshTokenRepository: IRefreshTokenRepository
             EXEC DeleteRefreshToken 
                 @Token = {token}");
     }
-
 
 }

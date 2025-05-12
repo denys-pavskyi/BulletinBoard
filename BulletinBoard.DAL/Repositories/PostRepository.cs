@@ -38,7 +38,6 @@ public class PostRepository: IPostRepository
         );
     }
 
-
     public async Task DeleteByIdAsync(Guid id)
     {
         var sql = "EXEC DeletePostById @Id";

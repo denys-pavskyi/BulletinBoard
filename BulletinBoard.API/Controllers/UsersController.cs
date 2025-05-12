@@ -1,7 +1,6 @@
 ﻿using BulletinBoard.BLL.Interfaces;
 using BulletinBoard.BLL.Other;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BulletinBoard.API.Controllers
