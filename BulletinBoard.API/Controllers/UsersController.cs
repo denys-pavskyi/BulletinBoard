@@ -1,5 +1,6 @@
 ﻿using BulletinBoard.BLL.Interfaces;
 using BulletinBoard.BLL.Other;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,7 +16,7 @@ namespace BulletinBoard.API.Controllers
             _userService = userService;
         }
 
-
+        [Authorize]
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]

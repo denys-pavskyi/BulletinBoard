@@ -104,12 +104,12 @@ namespace BulletinBoard.WebClient.Controllers
 
         public async Task<IActionResult> MyPosts()
         {
-            if (!_userContextService.IsAuthenticated)
+            if (!_userContextService.IsAuthenticated || _userContextService.UserId is null)
             {
                 return RedirectToAction("Login", "Auth");
             }
 
-            var userId = Guid.Parse("D2B23AD3-BD8B-4CA6-AA22-B8E5B3C47CF0");
+            var userId = _userContextService.UserId ?? Guid.Empty;
             var result = await _postService.GetPostsByUserIdAsync(userId);
 
             if (!result.IsSuccess)

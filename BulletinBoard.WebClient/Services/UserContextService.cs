@@ -25,4 +25,31 @@ public class UserContextService: IUserContextService
 
     public string? Username =>
         _httpContextAccessor.HttpContext?.Request.Cookies["username"];
+
+    public string? JwtToken =>
+        _httpContextAccessor.HttpContext?.Request.Cookies["jwt"];
+
+    public void SetJwtToken(string token)
+    {
+        if (_httpContextAccessor.HttpContext?.Response != null)
+        {
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Strict,
+                Expires = DateTime.UtcNow.AddHours(1)
+            };
+
+            _httpContextAccessor.HttpContext.Response.Cookies.Append("jwt", token, cookieOptions);
+        }
+    }
+
+    public void RemoveJwtToken()
+    {
+        if (_httpContextAccessor.HttpContext?.Response != null)
+        {
+            _httpContextAccessor.HttpContext.Response.Cookies.Delete("jwt");
+        }
+    }
 }

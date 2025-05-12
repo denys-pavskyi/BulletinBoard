@@ -29,6 +29,7 @@ namespace BulletinBoard.API.Controllers
             return Ok(result);
         }
 
+        [Authorize]
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
@@ -43,6 +44,8 @@ namespace BulletinBoard.API.Controllers
             );
         }
 
+
+        [Authorize]
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -52,7 +55,7 @@ namespace BulletinBoard.API.Controllers
             return Ok(result.Value);
         }
 
-
+        [Authorize]
         [HttpPut("{id:guid}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
@@ -66,6 +69,7 @@ namespace BulletinBoard.API.Controllers
             );
         }
 
+        [Authorize]
         [HttpDelete("{id:guid}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]

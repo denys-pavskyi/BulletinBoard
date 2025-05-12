@@ -1,4 +1,5 @@
 ﻿using BulletinBoard.WebClient.Models.Auth;
+using BulletinBoard.WebClient.Services;
 using BulletinBoard.WebClient.Services.Interfaces;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
@@ -10,17 +11,19 @@ namespace BulletinBoard.WebClient.Controllers
     public class AuthController : Controller
     {
         private readonly IApiService _apiService;
+        private readonly IUserContextService _userContextService;
 
-        public AuthController(IApiService apiService)
+        public AuthController(IApiService apiService, IUserContextService userContextService)
         {
             _apiService = apiService;
+            _userContextService = userContextService;
         }
 
         [HttpGet]
         public IActionResult Logout()
         {
 
-            Response.Cookies.Delete("jwt");
+            _userContextService.RemoveJwtToken();
             Response.Cookies.Delete("uid");
             Response.Cookies.Delete("username");
 
@@ -53,16 +56,9 @@ namespace BulletinBoard.WebClient.Controllers
                 ModelState.AddModelError(string.Empty, response.ErrorMessage ?? "Login failed");
                 return View(model);
             }
-
             var authData = response.Value!;
 
-            Response.Cookies.Append("jwt", authData.Token, new CookieOptions
-            {
-                HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.Strict,
-                Expires = DateTimeOffset.UtcNow.AddHours(1)
-            });
+            _userContextService.SetJwtToken(response.Value.Token);
 
             Response.Cookies.Append("uid", authData.Id.ToString(), new CookieOptions
             {

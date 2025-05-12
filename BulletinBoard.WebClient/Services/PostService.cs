@@ -2,6 +2,7 @@
 using BulletinBoard.WebClient.Models.Posts;
 using BulletinBoard.WebClient.Services.Interfaces;
 using System.Net;
+using System.Net.Http.Headers;
 
 namespace BulletinBoard.WebClient.Services;
 
@@ -9,10 +10,12 @@ public class PostService: IPostService
 {
     private readonly HttpClient _httpClient;
     private readonly IApiService _apiService;
+    private readonly IUserContextService _userContextService;
 
-    public PostService(IHttpClientFactory httpClientFactory, IApiService apiService)
+    public PostService(IHttpClientFactory httpClientFactory, IApiService apiService, IUserContextService userContextService)
     {
         _apiService = apiService;
+        _userContextService = userContextService;
         _httpClient = httpClientFactory.CreateClient("ApiClient");
     }
 
@@ -31,25 +34,59 @@ public class PostService: IPostService
 
     public async Task<Result<List<PostViewModel>>> GetPostsByUserIdAsync(Guid userId)
     {
-        var response = await _httpClient.GetAsync($"/api/posts/user/{userId}");
+        var token = _userContextService.JwtToken;
+
+        if (string.IsNullOrEmpty(token))
+        {
+            return Result<List<PostViewModel>>.Failure("User is not authenticated.");
+        }
+
+
+        var requestMessage = new HttpRequestMessage(HttpMethod.Get, $"/api/posts/user/{userId}");
+
+        requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+        var response = await _httpClient.SendAsync(requestMessage);
+
         return await _apiService.HandleApiResponse<List<PostViewModel>>(response);
     }
 
     public async Task<Result<PostViewModel?>> GetByIdAsync(Guid postId)
     {
-        var response = await _httpClient.GetFromJsonAsync<PostViewModel?>($"/api/posts/{postId}");
+        var token = _userContextService.JwtToken;
 
-        if (response == null)
+        if (string.IsNullOrEmpty(token))
         {
-            return Result<PostViewModel?>.Failure("Post not found.");
+            return Result<PostViewModel?>.Failure("User is not authenticated.");
         }
 
-        return Result<PostViewModel?>.Success(response);
+        var requestMessage = new HttpRequestMessage(HttpMethod.Get, $"/api/posts/{postId}");
+        requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+        var response = await _httpClient.SendAsync(requestMessage);
+
+        return await _apiService.HandleApiResponse<PostViewModel?>(response);
     }
 
     public async Task<Result> UpdateAsync(Guid id, UpdatePostRequest request)
     {
-        var response = await _httpClient.PutAsJsonAsync($"/api/posts/{id}", request);
+        var token = _userContextService.JwtToken;
+
+        if (string.IsNullOrEmpty(token))
+        {
+            return Result.Failure(new ErrorResponse
+            {
+                Message = "User is not authenticated."
+            });
+        }
+        var requestMessage = new HttpRequestMessage(HttpMethod.Put, $"/api/posts/{id}")
+        {
+            Content = JsonContent.Create(request)
+        };
+        requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+        var response = await _httpClient.SendAsync(requestMessage);
+
 
         if (response.IsSuccessStatusCode)
         {
@@ -67,7 +104,21 @@ public class PostService: IPostService
     {
         try
         {
-            var response = await _httpClient.DeleteAsync($"/api/posts/{postId}");
+            var token = _userContextService.JwtToken;
+
+            if (string.IsNullOrEmpty(token))
+            {
+                return Result.Failure(new ErrorResponse
+                {
+                    Message = "User is not authenticated."
+                });
+            }
+
+
+            var requestMessage = new HttpRequestMessage(HttpMethod.Delete, $"/api/posts/{postId}");
+            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var response = await _httpClient.SendAsync(requestMessage); ;
 
             if (response.IsSuccessStatusCode)
             {
@@ -95,7 +146,23 @@ public class PostService: IPostService
 
     public async Task<Result> AddAsync(CreatePostFormModel request)
     {
-        var response = await _httpClient.PostAsJsonAsync("/api/posts", request);
+        var token = _userContextService.JwtToken;
+
+        if (string.IsNullOrEmpty(token))
+        {
+            return Result.Failure(new ErrorResponse
+            {
+                Message = "User is not authenticated."
+            });
+        }
+
+        var requestMessage = new HttpRequestMessage(HttpMethod.Post, "/api/posts")
+        {
+            Content = JsonContent.Create(request)
+        };
+        requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+        var response = await _httpClient.SendAsync(requestMessage);
 
         if (response.IsSuccessStatusCode)
         {
