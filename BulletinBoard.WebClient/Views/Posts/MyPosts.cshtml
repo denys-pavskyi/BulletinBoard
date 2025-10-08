@@ -1,0 +1,146 @@
+﻿@using BulletinBoard.WebClient.Data
+@using BulletinBoard.WebClient.Models.Posts
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model BulletinBoard.WebClient.Models.Posts.MyPostsViewModel
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "My Posts";
+}
+
+<button type="button" class="btn btn-primary mb-3 create-post-btn">
+    Create New Post
+</button>
+
+<!-- Posts list -->
+<div class="col-md-9">
+    <div id="posts-list">
+        @await Html.PartialAsync("_MyPostsList", Model.Posts)
+    </div>
+</div>
+
+@await Html.PartialAsync("_EditPostModal", new UpdatePostFormModel())
+@await Html.PartialAsync("_CreatePostModal", new CreatePostFormModel())
+
+<!-- Modal window for editing -->
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editModalLabel">Edit Post</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editPostForm">
+                    <input type="hidden" id="editPostId" />
+
+                    <div class="mb-3">
+                        <label for="editTitle" class="form-label">Title</label>
+                        <input type="text" class="form-control" id="editTitle" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="editDescription" class="form-label">Description</label>
+                        <textarea class="form-control" id="editDescription"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editSubcategory" class="form-label">Subcategory</label>
+                        <select class="form-control" id="editSubcategory">
+                            @foreach (var category in CategoryData.Categories)
+                            {
+                                <optgroup label="@category.Name">
+                                    @foreach (var sub in category.Subcategories)
+                                    {
+                                        <option value="@sub.Id">@sub.Name</option>
+                                    }
+                                </optgroup>
+                            }
+                        </select>
+                    </div>
+                    <div class="form-check mb-3">
+                        <input type="checkbox" class="form-check-input" id="editIsActive" />
+                        <label class="form-check-label" for="editIsActive">Active</label>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for delete confirmation -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Confirm Deletion</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete this post?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="deleteForm" method="post" asp-action="Delete" asp-controller="Posts">
+                    <input type="hidden" id="postIdToDelete" name="postId" />
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll('.btn-danger[data-post-id]').forEach(button => {
+            button.addEventListener('click', function () {
+                var postId = this.getAttribute('data-post-id');
+                document.getElementById('postIdToDelete').value = postId;
+            });
+        });
+
+        document.querySelectorAll('.edit-post-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                const postId = this.getAttribute('data-post-id');
+                const title = this.getAttribute('data-title');
+                const description = this.getAttribute('data-description');
+                const subcategoryId = this.getAttribute('data-subcategory-id');
+                const isActive = this.getAttribute('data-isactive') === 'true';
+
+                document.getElementById('editPostId').value = postId;
+                document.getElementById('editTitle').value = title;
+                document.getElementById('editDescription').value = description;
+                document.getElementById('editSubcategory').value = subcategoryId;
+                document.getElementById('editIsActive').checked = isActive;
+
+                const modal = new bootstrap.Modal(document.getElementById('editModal'));
+                modal.show();
+            });
+        });
+
+        function getCookieValue(name) {
+            const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+            if (match) {
+                return decodeURIComponent(match[2]);
+            }
+            return null;
+        }
+
+        const uid = getCookieValue("uid");
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const createButton = document.querySelector('.create-post-btn');
+            if (createButton) {
+                createButton.addEventListener('click', function () {
+                    document.getElementById('createTitle').value = '';
+                    document.getElementById('createDescription').value = '';
+                    document.getElementById('createSubcategory').selectedIndex = 0;
+                    document.getElementById('createIsActive').checked = true;
+                    document.getElementById('userId').value = uid;
+
+                    const modal = new bootstrap.Modal(document.getElementById('createModal'));
+                    modal.show();
+                });
+            }
+        });
+        
+    </script>
+}

@@ -1,0 +1,48 @@
+﻿@using BulletinBoard.WebClient.Data
+@model BulletinBoard.WebClient.Models.Posts.CreatePostFormModel
+
+<div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="createModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createModalLabel">Create New Post</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="createPostForm" asp-controller="Posts" asp-action="Create" method="post">
+                    <input type="hidden" id="userId" name="UserId" value="" />
+
+                    <div class="mb-3">
+                        <label for="createTitle" class="form-label">Title</label>
+                        <input type="text" class="form-control" id="createTitle" name="Title" required />
+                    </div>
+                    <div class="mb-3">
+                        <label for="createDescription" class="form-label">Description</label>
+                        <textarea class="form-control" id="createDescription" name="Description" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="createSubcategory" class="form-label">Subcategory</label>
+                        <select class="form-control" id="createSubcategory" name="SubcategoryId">
+                            @foreach (var category in CategoryData.Categories)
+                            {
+                                <optgroup label="@category.Name">
+                                    @foreach (var sub in category.Subcategories)
+                                    {
+                                        <option value="@sub.Id">@sub.Name</option>
+                                    }
+                                </optgroup>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="form-check mb-3">
+                        <input type="checkbox" class="form-check-input" id="createIsActive" name="IsActive" value="true" />
+                        <label class="form-check-label" for="createIsActive">Active</label>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Create Post</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

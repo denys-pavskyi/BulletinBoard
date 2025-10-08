@@ -1,3 +1,5 @@
+appsettings.*
+
 # Created by https://www.toptal.com/developers/gitignore/api/aspnetcore
 # Edit at https://www.toptal.com/developers/gitignore?templates=aspnetcore
 
@@ -788,3 +790,9 @@ FodyWeavers.xsd
 *.user
 _ReSharper.*
 packages
+/BulletinBoard.API/appsettings.json
+/BulletinBoard.API/appsettings.Development.json
+/BulletinBoard.API/Properties/ServiceDependencies/BulletinBoardAPI - Zip Deploy/profile.arm.json
+/BulletinBoard.WebClient/Properties/ServiceDependencies/BulletinBoardWebClient - Zip Deploy/profile.arm.json
+/BulletinBoard.API/Properties/ServiceDependencies/BulletinBoardAPI - Zip Deploy/apis1.arm.json
+/BulletinBoard.API/Properties/serviceDependencies.BulletinBoardAPI - Zip Deploy.json

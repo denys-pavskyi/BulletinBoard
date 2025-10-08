@@ -1,0 +1,22 @@
+﻿@model BulletinBoard.WebClient.Models.Users.UserViewModel
+
+@{
+    ViewData["Title"] = "User Profile";
+}
+
+<h2 class="mb-4">User Profile</h2>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<div class="card shadow p-4">
+    <dl class="row">
+        <dt class="col-sm-3">Username</dt>
+        <dd class="col-sm-9">@Model.Username</dd>
+
+        <dt class="col-sm-3">Email</dt>
+        <dd class="col-sm-9">@Model.Email</dd>
+    </dl>
+</div>
